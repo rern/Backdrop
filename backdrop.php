@@ -32,15 +32,17 @@
 		.boxed-group {
 			padding: 10px 10px 3px 10px;
 			border-radius: 6px;
+			text-align: center;
 			line-height: 75px;
 			background: #2b3c4e;
 		}
 		.updn,
 		.ms {
 			display: inline-block;
-			width: 80px;
-			height: 80px;
+			width: 76px;
+			height: 76px;
 			margin: 0 5px;
+			padding: 0;
 			border-radius: 50%;
 			vertical-align: 0;
 			text-align: center;
@@ -53,7 +55,6 @@
 			background: rgba(255, 0, 0, .5);
 		}
 		.updn {
-			padding: 0;
 			font-size: 50px;
 		}
 		.btn.up {
@@ -132,8 +133,8 @@ $( '.btn' ).click( function() {
 	var updn = this.id
 	var ms = $( '#ms-'+ this.id ).val();
 	$( '.increment' ).addClass( 'disable' );
-	if ( $this.hasClass( 'blink' ) ) {
-		$this.removeClass( 'blink' );
+	if ( $( '.updn' ).hasClass( 'blink' ) ) {
+		$( '.updn' ).removeClass( 'blink' );
 		$( '.increment' ).removeClass( 'disable' );
 	} else {
 		$( '.btn' ).removeClass( 'blink' );
@@ -178,6 +179,8 @@ $( '.increment' ).on( 'touchstart mousedown', function() {
 var msup = $( '#ms-up' ).val();
 var msdn = $( '#ms-dn' ).val();
 $( '#setting' ).click( function() {
+	if ( $( '.updn' ).hasClass( 'blink' ) ) return
+	
 	msup = $( '#ms-up' ).val();
 	msdn = $( '#ms-dn' ).val();
 	set();
@@ -191,14 +194,14 @@ $( '#save' ).click( function() {
 	} );
 } );
 $( '.container' ).click( function( e ) {
-	if ( !$( e.target ).hasClass( 'ms' ) && e.target.id !== 'setting' ) restore();
+	if ( !$( e.target ).hasClass( 'ms' ) && e.target.id !== 'setting' && !$( '.updn' ).hasClass( 'blink' ) ) restore();
 } );
 function set() {
 	$( '#head' ).text( 'Duration Setting' );
 	$( '.ms, #save' ).removeClass( 'hide' );
 	$( '.updn, #setting' ).addClass( 'hide' );
 	$( '.increment' ).addClass( 'disable' );
-	$( '.ms' ).css( 'vertical-align', '8px' );
+	$( '.ms' ).css( 'vertical-align', '10px' );
 }
 function restore() {
 	$( '#head' ).text( 'Controls' );
