@@ -30,6 +30,7 @@
 			height: 100vh;
 		}
 		.boxed-group {
+			margin-bottom: 5px;
 			padding: 10px 10px 3px 10px;
 			border-radius: 6px;
 			text-align: center;
@@ -102,25 +103,34 @@
 		}
 	</style>
 </head>
-<?php
-$redis = new Redis();
-$redis->pconnect( '127.0.0.1' );
-$up = $redis->hGet( 'backdrop', 'up' );
-$dn = $redis->hGet( 'backdrop', 'dn' );
-?>
 <body>
 <div class="container">
 <h1>BACKDROP</h1>
 <legend><a id="head">Controls</a><i id="setting" class="fa fa-gear"></i><i id="save" class="fa fa-save hide"></i></legend>
+
+<?php
+$redis = new Redis();
+$redis->pconnect( '127.0.0.1' );
+$up = $redis->hGet( 'backdrops', 'up' );
+$dn = $redis->hGet( 'backdrops', 'dn' );
+$up = explode( ',', $up );
+$dn = explode( ',', $dn );
+$html = '<form id="formms">';
+foreach ( range( 7, 1 ) as $i ) {
+$html.='
 <div class="boxed-group">
-	<i id="increment-up" class="increment fa fa-plus-circle"></i>
-	<a id="up" class="updn up btn"><i class="fa fa-arrow-up"></i></a>
-	<input id="ms-up" type="text" class="ms up form-control input-lg hide" value="<?=$up?>">
-	<span class="number">7</span>
-	<a id="dn" class="updn dn btn"><i class="fa fa-arrow-down"></i></a>
-	<input id="ms-dn" type="text" class="ms dn form-control input-lg hide" value="<?=$dn?>">
-	<i id="increment-dn" class="increment fa fa-plus-circle"></i>
+	<i id="increment-up'.$i.'" class="increment fa fa-plus-circle"></i>
+	<a id="up'.$i.'" class="updn up btn"><i class="fa fa-arrow-up"></i></a>
+	<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms up form-control input-lg hide" value="'.$up[ $i - 1 ].'">
+	<span class="number">'.$i.'</span>
+	<a id="dn'.$i.'" class="updn dn btn"><i class="fa fa-arrow-down"></i></a>
+	<input id="ms-dn'.$i.'" name="ms-dn'.$i.'" type="text" class="ms dn form-control input-lg hide" value="'.$dn[ $i - 1 ].'">
+	<i id="increment-dn'.$i.'" class="increment fa fa-plus-circle"></i>
 </div>
+';
+}
+echo $html.'</form>';
+?>
 </div>
 
 <script src="/js/vendor/jquery-2.1.0.min.js"></script>
@@ -176,19 +186,14 @@ $( '.increment' ).on( 'touchstart mousedown', function() {
 	}
 	$.post( 'enhance.php', { bash: '/root/backdropoff.py &> /dev/null' } );
 } );
-var msup = $( '#ms-up' ).val();
-var msdn = $( '#ms-dn' ).val();
 $( '#setting' ).click( function() {
 	if ( $( '.updn' ).hasClass( 'blink' ) ) return
 	
-	msup = $( '#ms-up' ).val();
-	msdn = $( '#ms-dn' ).val();
 	set();
 } );
 $( '#save' ).click( function() {
-	var up = $( '#ms-up' ).val();
-	var dn = $( '#ms-dn' ).val();
-	$.post( 'enhance.php', { bash: '/usr/bin/redis-cli hmset backdrop up '+ up +' dn '+ dn }, function() {
+	$.post( 'backdropsave.php', $( '#formms').serialize(), function(data) {
+		console.log(data)
 		info( 'Settings saved.' );
 		restore();
 	} );
