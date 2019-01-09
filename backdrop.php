@@ -190,21 +190,22 @@ $dn = explode( ',', $dn );
 $name = explode( ',', $name );
 $html = '<form id="formms">';
 foreach ( range( 7, 1 ) as $i ) {
-$html.='
-<div class="boxed-group">
-	<i id="increment-up'.$i.'" class="increment fa fa-plus-circle"></i>
-	<i id="up'.$i.'" class="updn up btn fa fa-arrow-up"></i>
-	<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms up hide" value="'.$up[ $i - 1 ].'">
-	<div class="label">
-		<div class="number">'.$i.'</div>
-		<div id="name'.$i.'" class="name">'.( $name[ $i - 1 ] === '0' ? '&nbsp;' : $name[ $i - 1 ] ).'</div>
-		<input id="inputname'.$i.'" name="inputname'.$i.'" type="text" class="inputname hide" value="'.( $name[ $i - 1 ] === '0' ? '' : $name[ $i - 1 ] ).'">
+	$unused = $name[ $i - 1 ] === 'x' ? ' hide unused' : '';
+	$html.='
+	<div class="boxed-group'.$unused.'">
+		<i id="increment-up'.$i.'" class="increment fa fa-plus-circle'.$disable.'"></i>
+		<i id="up'.$i.'" class="updn up btn fa fa-arrow-up'.$disable.'"></i>
+		<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms up hide" value="'.$up[ $i - 1 ].'">
+		<div class="label">
+			<div class="number">'.$i.'</div>
+			<div id="name'.$i.'" class="name">'.( $name[ $i - 1 ] == '0' ? '&nbsp;' : $name[ $i - 1 ] ).'</div>
+			<input id="inputname'.$i.'" name="inputname'.$i.'" type="text" class="inputname hide" value="'.( $name[ $i - 1 ] == '0' ? '' : $name[ $i - 1 ] ).'">
+		</div>
+		<i id="dn'.$i.'" class="updn dn btn fa fa-arrow-down'.$disable.'"></i>
+		<input id="ms-dn'.$i.'" name="ms-dn'.$i.'" type="text" class="ms dn hide" value="'.$dn[ $i - 1 ].'">
+		<i id="increment-dn'.$i.'" class="increment fa fa-plus-circle'.$disable.'"></i>
 	</div>
-	<i id="dn'.$i.'" class="updn dn btn fa fa-arrow-down"></i>
-	<input id="ms-dn'.$i.'" name="ms-dn'.$i.'" type="text" class="ms dn hide" value="'.$dn[ $i - 1 ].'">
-	<i id="increment-dn'.$i.'" class="increment fa fa-plus-circle"></i>
-</div>
-';
+	';
 }
 echo $html.'</form>';
 ?>
@@ -219,7 +220,6 @@ var nameW = Math.max.apply( Math, $( '.name' ).map( function() { return $( this 
 $( '.name, .inputname' ).css( 'width', nameW + 12 );
 
 $.post( 'enhance.php', { bash: './backdrop.py state' }, function( state ) {
-	console.log(state)
 	var state = JSON.parse( state );
 	if ( !state.length ) {
 		$( '.increment' ).removeClass( 'disable' );
@@ -295,10 +295,12 @@ $( '#setting' ).click( function() {
 $( '#save' ).click( function() {
 	$.post( 'backdropsave.php', $( '#formms').serialize(), function() {
 		info( 'Settings saved.' );
-		restore();
 		$.each( $( '.inputname' ), function( i, el ) {
-			$( '#name'+ ( i + 1 ) ).text( $( '#inputname'+ ( i + 1 ) ).val() );
+			var val = $( '#inputname'+ ( i + 1 ) ).val();
+			$( '#name'+ ( i + 1 ) ).html( val ? val : '&nbsp;' );
+			$( '#inputname'+ ( i + 1 ) ).parent().parent().toggleClass( 'unused', val === 'x' );
 		} );
+		restore();
 		$( '.name' ).css( 'width', '' );
 		var nameW = Math.max.apply( Math, $( '.name' ).map( function() { return $( this ).width(); } ).get() );
 		$( '.name, .inputname' ).css( 'width', nameW + 12 );
@@ -312,6 +314,7 @@ function set() {
 	$( '.increment' ).addClass( 'disable' );
 	$( '.ms' ).css( 'vertical-align', '10px' );
 	$( '.number' ).css( 'vertical-align', '0' );
+	$( '.boxed-group.unused' ).removeClass( 'hide' );
 }
 function restore() {
 	$( '#title' ).text( 'ค ว บ คุ ม' );
@@ -320,6 +323,7 @@ function restore() {
 	$( '.increment' ).removeClass( 'disable' );
 	$( '.ms' ).css( 'vertical-align', '' );
 	$( '.number' ).css( 'vertical-align', '' );
+	$( '.boxed-group.unused' ).addClass( 'hide' );
 }
 </script>
 </body>
