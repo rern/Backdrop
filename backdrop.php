@@ -30,6 +30,7 @@
 	.fa-arrow-up-circle:before { content: "\f56B" }
 	.fa-arrow-down-circle:before { content: "\f56C" }
 	.fa-plus-circle:before { content: "\f51D" }
+	.fa-sliders:before { content: "\f50B" }
 	.fa-gear:before { content: "\f509" }
 	.fa-save:before { content: "\f542"}
 	.fa-times:before { content: "\f51A" }
@@ -181,7 +182,7 @@
 <img id="logo" src="backdrop.png">
 <a id="head">ฉ า ก</a><br>
 <a id="title">ค ว บ คุ ม</a>
-<i id="setting" class="setting fa fa-gear"></i><i id="close" class="setting fa fa-times hide"></i><i id="save" class="setting fa fa-save hide"></i>
+<i id="setting" class="setting fa fa-sliders"></i><i id="close" class="setting fa fa-times hide"></i><i id="save" class="setting fa fa-save hide"></i>
 
 <?php
 $redis = new Redis();
