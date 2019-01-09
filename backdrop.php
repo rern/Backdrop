@@ -91,7 +91,7 @@
 		background: rgba(7, 97, 7, .5);
 	}
 	.ms.dn {
-		background: rgba(144, 13, 13, .5);
+		background: rgba(174, 65, 49, .7);
 	}
 	.updn {
 		font-size: 48px;
@@ -100,7 +100,7 @@
 		background: #076107;
 	}
 	.btn.dn {
-		background: #900d0d;
+		background: #ae4131;
 	}
 	.increment,
 	.number,
@@ -191,7 +191,7 @@ $dn = explode( ',', $dn );
 $name = explode( ',', $name );
 $html = '<form id="formms">';
 foreach ( range( 7, 1 ) as $i ) {
-	$unused = $name[ $i - 1 ] === 'x' ? ' hide unused' : '';
+	$unused = $name[ $i - 1 ] ? '' : ' hide unused';
 	$html.='
 	<div class="boxed-group'.$unused.'">
 		<i id="increment-up'.$i.'" class="increment fa fa-plus-circle'.$disable.'"></i>
@@ -299,7 +299,7 @@ $( '#save' ).click( function() {
 		$.each( $( '.inputname' ), function( i, el ) {
 			var val = $( '#inputname'+ ( i + 1 ) ).val();
 			$( '#name'+ ( i + 1 ) ).html( val ? val : '&nbsp;' );
-			$( '#inputname'+ ( i + 1 ) ).parent().parent().toggleClass( 'unused', val === 'x' );
+			$( '#inputname'+ ( i + 1 ) ).parent().parent().toggleClass( 'unused', !val );
 		} );
 		restore();
 		$( '.name' ).css( 'width', '' );
