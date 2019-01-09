@@ -27,8 +27,8 @@
 		font-family: enhance;
 		font-style: normal;
 	}
-	.fa-arrow-up:before { content: "\f566" }
-	.fa-arrow-down:before { content: "\f567" }
+	.fa-arrow-up-circle:before { content: "\f56B" }
+	.fa-arrow-down-circle:before { content: "\f56C" }
 	.fa-plus-circle:before { content: "\f51D" }
 	.fa-gear:before { content: "\f509" }
 	.fa-save:before { content: "\f542"}
@@ -74,7 +74,6 @@
 	#close {
 		color: red;
 	}
-	.updn,
 	.ms {
 		display: inline-block;
 		width: 70px;
@@ -94,13 +93,17 @@
 		background: rgba(174, 65, 49, .7);
 	}
 	.updn {
-		font-size: 48px;
+		display: inline-block;
+		width: 70px;
+		margin: 0 5px;
+		vertical-align: -5px;
+		font-size: 64px;
 	}
-	.btn.up {
-		background: #076107;
+	.up {
+		color: #076107;
 	}
-	.btn.dn {
-		background: #ae4131;
+	.dn {
+		color: #ae4131;
 	}
 	.increment,
 	.number,
@@ -194,17 +197,17 @@ foreach ( range( 7, 1 ) as $i ) {
 	$unused = $name[ $i - 1 ] ? '' : ' hide unused';
 	$html.='
 	<div class="boxed-group'.$unused.'">
-		<i id="increment-up'.$i.'" class="increment fa fa-plus-circle'.$disable.'"></i>
-		<i id="up'.$i.'" class="updn up btn fa fa-arrow-up'.$disable.'"></i>
+		<i id="increment-up'.$i.'" class="increment fa fa-arrow-up-circle"></i>
+		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle"></i>
 		<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms up hide" value="'.$up[ $i - 1 ].'">
 		<div class="label">
 			<div class="number">'.$i.'</div>
 			<div id="name'.$i.'" class="name">'.( $name[ $i - 1 ] == '0' ? '&nbsp;' : $name[ $i - 1 ] ).'</div>
 			<input id="inputname'.$i.'" name="inputname'.$i.'" type="text" class="inputname hide" value="'.( $name[ $i - 1 ] == '0' ? '' : $name[ $i - 1 ] ).'">
 		</div>
-		<i id="dn'.$i.'" class="updn dn btn fa fa-arrow-down'.$disable.'"></i>
+		<i id="dn'.$i.'" class="updn dn fa fa-arrow-down-circle"></i>
 		<input id="ms-dn'.$i.'" name="ms-dn'.$i.'" type="text" class="ms dn hide" value="'.$dn[ $i - 1 ].'">
-		<i id="increment-dn'.$i.'" class="increment fa fa-plus-circle'.$disable.'"></i>
+		<i id="increment-dn'.$i.'" class="increment fa fa-arrow-down-circle"></i>
 	</div>
 	';
 }
