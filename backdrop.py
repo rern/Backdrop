@@ -31,10 +31,10 @@ if len( sys.argv ) == 1 and UpDn == 'state':
 	
 second = float( sys.argv[ 2 ] )
 if UpDn == 'up':
-	GPIO.output( pinUP, ON )
-	time.sleep( second )
-	GPIO.output( pinUP, OFF )
+	pin = pinUP
 else:
-	GPIO.output( pinDN, ON )
-	time.sleep( second )
-	GPIO.output( pinDN, OFF )
+	pin = pinDN
+
+GPIO.output( pin, ON )
+time.sleep( second )
+GPIO.output( pin, OFF )
