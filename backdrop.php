@@ -193,14 +193,14 @@ foreach ( range( 7, 1 ) as $i ) {
 $html.='
 <div class="boxed-group">
 	<i id="increment-up'.$i.'" class="increment fa fa-plus-circle"></i>
-	<a id="up'.$i.'" class="updn up btn"><i class="fa fa-arrow-up"></i></a>
+	<i id="up'.$i.'" class="updn up btn fa fa-arrow-up"></i>
 	<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms up hide" value="'.$up[ $i - 1 ].'">
 	<div class="label">
 		<div class="number">'.$i.'</div>
 		<div id="name'.$i.'" class="name">'.( $name[ $i - 1 ] === '0' ? '&nbsp;' : $name[ $i - 1 ] ).'</div>
 		<input id="inputname'.$i.'" name="inputname'.$i.'" type="text" class="inputname hide" value="'.( $name[ $i - 1 ] === '0' ? '' : $name[ $i - 1 ] ).'">
 	</div>
-	<a id="dn'.$i.'" class="updn dn btn"><i class="fa fa-arrow-down"></i></a>
+	<i id="dn'.$i.'" class="updn dn btn fa fa-arrow-down"></i>
 	<input id="ms-dn'.$i.'" name="ms-dn'.$i.'" type="text" class="ms dn hide" value="'.$dn[ $i - 1 ].'">
 	<i id="increment-dn'.$i.'" class="increment fa fa-plus-circle"></i>
 </div>
