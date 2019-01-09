@@ -69,7 +69,7 @@
 		border-radius: 6px;
 		text-align: center;
 		line-height: 64px;
-		background: #2b3c4e;
+		background: #19232d;
 	}
 	#close {
 		color: red;
@@ -149,14 +149,14 @@
 		background: #e0e7ee;
 	}
 	@keyframes blinkdot {
-		50% { opacity: 0.5 }
+		50% { opacity: 0.3 }
 	}
 	.blink {
 		animation: 1s blinkdot infinite;
 		-webkit-animation: 1s blinkdot infinite;
 	}
 	.disable {
-		opacity: 0.5;
+		opacity: 0.3;
 	}
 	@media(max-width: 375px) {
 		.name {
