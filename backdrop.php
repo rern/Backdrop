@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>BACKDROPS</title>
+	<title>Backdrops</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -163,6 +163,11 @@
 		}
 		.number {
 			vertical-align: 20px;
+		}
+	}
+	@media(min-height: 730px) {
+		.boxed-group {
+			margin-bottom: 10px;
 		}
 	}
 	</style>
