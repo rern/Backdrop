@@ -2,38 +2,42 @@
 import RPi.GPIO as GPIO
 import sys
 import time
+import json
 
 ON = 1
 OFF = 0
 
-pinUP = 11
-pinDN = 13
-pinLimitUP = 15
-pinLimitDN = 16
-pins = [ pinUP, pinDN ]
-pinLimits = [ pinLimitUP, pinLimitDN ]
+pinUPlist = [  3, 16, 19, 21, 22, 23, 11 ]
+pinDNlist = [ 13, 26, 29, 31, 32, 33, 15 ]
 
 GPIO.setwarnings( 0 )
 GPIO.setmode( GPIO.BOARD )
-GPIO.setup( pins, GPIO.OUT )
+GPIO.setup( pinUPlist + pinDNlist, GPIO.OUT )
 
-if GPIO.input( pinUP ) == 1:
-	state = 'up'
-elif GPIO.input( pinDN ) == 1:
-	state = 'dn'
+stateON = []
+for i in range( 0, 6 ):
+	if GPIO.input( pinUPlist[ i ] ) == 1:
+		stateON.append( 'up'+ str( i + 1 ) )
+	if GPIO.input( pinDNlist[ i ] ) == 1:
+		stateON.append( 'dn'+ str( i + 1 ) )
+		
+arg1 = sys.argv[ 1 ]
+if arg1 == 'state':
+	print( json.dumps( stateON ) )
+	exit()
+
+UpDn = arg1[ :2 ]
+i = int( arg1[ -1: ] ) - 1
+if UpDn == 'up':
+	pin = pinUPlist[ i ]
 else:
-	state = 0
-	
-UpDn = sys.argv[ 1 ]
-if len( sys.argv ) == 1 and UpDn == 'state':
-	print( state )
+	pin = pinDNlist[ i ]
+
+if len( sys.argv ) == 2:
+	GPIO.output( pin, OFF )
 	exit()
 	
 second = float( sys.argv[ 2 ] )
-if UpDn == 'up':
-	pin = pinUP
-else:
-	pin = pinDN
 
 GPIO.output( pin, ON )
 time.sleep( second )
