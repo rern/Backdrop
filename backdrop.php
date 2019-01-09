@@ -65,7 +65,7 @@
 	}
 	.boxed-group {
 		margin-bottom: 5px;
-		padding: 5px 10px 0 10px;
+		padding: 8px 10px 0 10px;
 		border-radius: 6px;
 		text-align: center;
 		line-height: 64px;
@@ -88,19 +88,19 @@
 		color: #e0e7ee;
 	}
 	.ms.up {
-		background: rgba(0, 128, 0, .5);
+		background: rgba(7, 97, 7, .5);
 	}
 	.ms.dn {
-		background: rgba(255, 0, 0, .5);
+		background: rgba(144, 13, 13, .5);
 	}
 	.updn {
 		font-size: 48px;
 	}
 	.btn.up {
-		background: green;
+		background: #076107;
 	}
 	.btn.dn {
-		background: red;
+		background: #900d0d;
 	}
 	.increment,
 	.number,
@@ -131,7 +131,9 @@
 		font-size: 32px;
 		text-align: center;
 	}
-	.ms,
+	.ms {
+		font-size: 18px;
+	}
 	.name,
 	.inputname {
 		font-size: 16px;
@@ -157,7 +159,6 @@
 		opacity: 0.5;
 	}
 	@media(max-width: 375px) {
-		.increment.disable,
 		.name {
 			display: none;
 		}
@@ -315,6 +316,7 @@ function set() {
 	$( '.ms' ).css( 'vertical-align', '10px' );
 	$( '.number' ).css( 'vertical-align', '0' );
 	$( '.boxed-group.unused' ).removeClass( 'hide' );
+	$( '.increment' ).toggleClass( 'hide', window.innerWidth <= 480 );
 }
 function restore() {
 	$( '#title' ).text( 'ค ว บ คุ ม' );
@@ -324,6 +326,7 @@ function restore() {
 	$( '.ms' ).css( 'vertical-align', '' );
 	$( '.number' ).css( 'vertical-align', '' );
 	$( '.boxed-group.unused' ).addClass( 'hide' );
+	$( '.increment' ).removeClass( 'hide' );
 }
 </script>
 </body>
