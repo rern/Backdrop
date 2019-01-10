@@ -34,6 +34,7 @@
 	.fa-gear:before { content: "\f509" }
 	.fa-save:before { content: "\f542"}
 	.fa-times:before { content: "\f51A" }
+	.fa-up-down:before { content: "\f568" }
 	body {
 		padding-top: 10px;
 		font-family: 'DSN_Kamon';
@@ -173,9 +174,15 @@
 	.disable {
 		opacity: 0.3;
 	}
+	.wh {
+		color: #e0e7ee;
+	}
 	@media(max-width: 375px) {
 		.name {
 			display: none;
+		}
+		.label {
+			vertical-align: -18px;
 		}
 		.number {
 			vertical-align: 20px;
@@ -192,8 +199,8 @@
 <div class="container">
 <img id="logo" src="backdrop.png">
 <a id="head">ฉ า ก</a><br>
-<a id="title">ค ว บ คุ ม</a>
-<i id="setting" class="setting fa fa-sliders"></i><i id="close" class="setting fa fa-times hide"></i><i id="save" class="setting fa fa-save hide"></i>
+<a id="title">ค ว บ คุ ม&emsp;<i class="fa fa-up-down wh"></i></a>
+<i id="setting" class="setting fa fa-gear"></i><i id="close" class="setting fa fa-times hide"></i><i id="save" class="setting fa fa-save hide"></i>
 
 <?php
 $redis = new Redis();
@@ -210,7 +217,7 @@ foreach ( range( 7, 1 ) as $i ) {
 	$html.='
 	<div class="boxed-group'.$unused.'">
 		<i id="manual-up'.$i.'" class="manual fa fa-arrow-up-circle"></i>
-		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle"></i>
+		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle disable"></i>
 		<i id="oup'.$i.'" class="oupdn oup fa fa-arrow-up-circle blink hide"></i>
 		<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms msup hide" value="'.$up[ $i - 1 ].'">
 		<div class="label">
@@ -234,6 +241,10 @@ echo $html.'</form>';
 <script src="/js/vendor/pushstream.min.js"></script>
 <script src="/js/addonsinfo.js"></script>
 <script>
+var timeout;
+var tap = 0;
+manual = 0;
+
 var nameW = Math.max.apply( Math, $( '.name' ).map( function() { return $( this ).width(); } ).get() );
 $( '.name, .inputname' ).css( 'width', nameW + 10 );
 
@@ -244,10 +255,14 @@ var pushstream0 = new PushStream( {
 } );
 pushstream0.addChannel( 'backdrops' );
 pushstream0.onmessage = function( pinoff ) { // pinoff is array
-	if ( $( '#setting' ).hasClass( 'hide' ) ) return
+	if ( manual === 1 || $( '#setting' ).hasClass( 'hide' ) ) return
 	
-	var num = pinoff[ 0 ].pin.slice( -1 );
+	var updnid = pinoff[ 0 ].pin;
+	var updn = updnid.slice( 0, 2 );
+	var num = updnid.slice( -1 );
 	setButtonOff( num )
+	$( '#up'+ num ).removeClass( 'disable' );
+	$( '#dn'+ num ).addClass( 'disable' );
 }
 pushstream0.connect();
 
@@ -256,20 +271,26 @@ function setButton() {
 		var state = JSON.parse( state );
 		$( '.updn' ).removeClass( 'hide' );
 		$( '.oupdn' ).addClass( 'hide' );
-		$( '.manual' ).removeClass( 'disable' );
-		if ( !state.length ) return
+		$( '.manual, .updn.dn' ).removeClass( 'disable' );
+		if ( !state.on.length && !state.dn.length ) return
 		
-		$.each( state, function( i, updnid ) {
+		$.each( state.on, function( i, updnid ) {
 			$( '#'+ updnid ).addClass( 'hide' );
 			$( '#o'+ updnid ).removeClass( 'hide' );
 			var num = updnid.slice( -1 );
 			$( '#manual-up'+ num +', #manual-dn'+ num ).addClass( 'disable' );
 		} );
+		$.each( state.dn, function( i, num ) {
+			$( '#up'+ num ).removeClass( 'disable' );
+			$( '#dn'+ num ).addClass( 'disable' );
+		} );
 	} );
 }
 setButton();
-var timeout;
 $( '.updn, .oupdn' ).click( function() {
+	manual = 0;
+	if ( $( this ).hasClass( 'disable' ) ) return
+	
 	var updnid = this.id[ 0 ] !== 'o' ? this.id : this.id.slice( 1 );
 	var updn = updnid.slice( 0, 2 );
 	var num = updnid.slice( -1 );
@@ -307,12 +328,12 @@ function setButtonOff( num ) {
 	$( '#oup'+ num +', #odn'+ num ).addClass( 'hide' );
 	$( '#manual-up'+ num +', #manual-dn'+ num ).removeClass( 'disable' );
 }
-var tap = 0;
 $.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
 $( '.manual' ).on( 'touchstart mousedown', function() {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
 	tap = 1; // set to suppress touchend on tap
+	manual = 1;
 } ).on( 'tap', function() {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
@@ -356,14 +377,16 @@ $( '#save' ).click( function() {
 } );
 $( '#close' ).click( restore );
 function set() {
-	$( '#title' ).text( 'ตั้ ง ค่ า' );
+	$( '#title' ).html( 'ตั้ ง ค่ า&emsp;<i class="fa fa-sliders wh"></i>' );
 	$( '.ms, .setting, .inputname, .boxed-group.unused' ).removeClass( 'hide' );
 	$( '.manual, .updn, #setting, .name' ).addClass( 'hide' );
+	$( '.number' ).css( 'vertical-align', 0 );
 }
 function restore() {
-	$( '#title' ).text( 'ค ว บ คุ ม' );
+	$( '#title' ).html( 'ค ว บ คุ ม&emsp;<i class="fa fa-up-down wh"></i>' );
 	$( '.ms, .setting, .inputname, .boxed-group.unused' ).addClass( 'hide' );
 	$( '.manual, .updn, #setting, .name' ).removeClass( 'hide' );
+	$( '.number' ).css( 'vertical-align', '' );
 }
 </script>
 </body>
