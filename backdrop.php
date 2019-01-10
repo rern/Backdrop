@@ -66,10 +66,10 @@
 	}
 	.boxed-group {
 		margin-bottom: 5px;
-		padding: 8px 10px 0 10px;
+		padding: 5px 10px 0 10px;
 		border-radius: 6px;
 		text-align: center;
-		line-height: 64px;
+		line-height: 70px;
 		background: #19232d;
 	}
 	#close {
@@ -113,7 +113,7 @@
 	.odn {
 		color: #ff0000;
 	}
-	.increment,
+	.manual,
 	.number,
 	.setting {
 		display: inline-block;
@@ -125,7 +125,8 @@
 		float: right;
 		margin-top: -25px;
 	}
-	.increment {
+	.manual {
+		vertical-align: -3px;
 		-webkit-touch-callout: none; /* iOS Safari */
 		-webkit-user-select: none;   /* Safari */
 		-moz-user-select: none;      /* Firefox */
@@ -134,7 +135,7 @@
 	}
 	.label {
 		display: inline-block;
-		vertical-align: -15px;
+		vertical-align: -12px;
 		line-height: 20px;
 	}
 	.number {
@@ -205,7 +206,7 @@ foreach ( range( 7, 1 ) as $i ) {
 	$unused = $name[ $i - 1 ] ? '' : ' hide unused';
 	$html.='
 	<div class="boxed-group'.$unused.'">
-		<i id="increment-up'.$i.'" class="increment fa fa-arrow-up-circle"></i>
+		<i id="manual-up'.$i.'" class="manual fa fa-arrow-up-circle"></i>
 		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle"></i>
 		<i id="oup'.$i.'" class="oupdn oup fa fa-arrow-up-circle blink hide"></i>
 		<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms up hide" value="'.$up[ $i - 1 ].'">
@@ -217,7 +218,7 @@ foreach ( range( 7, 1 ) as $i ) {
 		<i id="dn'.$i.'" class="updn dn fa fa-arrow-down-circle"></i>
 		<i id="odn'.$i.'" class="oupdn odn fa fa-arrow-down-circle blink hide"></i>
 		<input id="ms-dn'.$i.'" name="ms-dn'.$i.'" type="text" class="ms dn hide" value="'.$dn[ $i - 1 ].'">
-		<i id="increment-dn'.$i.'" class="increment fa fa-arrow-down-circle"></i>
+		<i id="manual-dn'.$i.'" class="manual fa fa-arrow-down-circle"></i>
 	</div>
 	';
 }
@@ -231,20 +232,32 @@ echo $html.'</form>';
 <script src="/js/addonsinfo.js"></script>
 <script>
 var nameW = Math.max.apply( Math, $( '.name' ).map( function() { return $( this ).width(); } ).get() );
-$( '.name, .inputname' ).css( 'width', nameW + 12 );
+$( '.name, .inputname' ).css( 'width', nameW + 10 );
+
+var pushstream0 = new PushStream( {
+	host: window.location.hostname,
+	port: window.location.port,
+	modes: 'websocket'
+} );
+pushstream0.addChannel( 'backdrops' );
+pushstream0.onmessage = function( pinoff ) { // pinoff is array
+	var num = pinoff[ 0 ].pin.slice( -1 );
+	setButtonOff( num )
+}
+pushstream0.connect();
 
 $.post( 'enhance.php', { bash: './backdrop.py state' }, function( state ) {
 	var state = JSON.parse( state );
 	$( '.updn' ).removeClass( 'hide' );
 	$( '.oupdn' ).addClass( 'hide' );
-	$( '.increment' ).removeClass( 'disable' );
+	$( '.manual' ).removeClass( 'disable' );
 	if ( !state.length ) return
 	
 	$.each( state, function( i, updnid ) {
 		$( '#'+ updnid ).addClass( 'hide' );
 		$( '#o'+ updnid ).removeClass( 'hide' );
 		var num = updnid.slice( -1 );
-		$( '#increment-up'+ num +', #increment-dn'+ num ).addClass( 'disable' );
+		$( '#manual-up'+ num +', #manual-dn'+ num ).addClass( 'disable' );
 	} );
 } );
 var timeout;
@@ -258,10 +271,10 @@ $( '.updn, .oupdn' ).click( function() {
 	var $updn = $( '#'+ updnid );
 	var $pair = $( '#'+ pairid );
 	var $oupdn = $( '#o'+ updn + num );
-	var $increment = $( '#increment-up'+ num +', #increment-dn'+ num );
+	var $manual = $( '#manual-up'+ num +', #manual-dn'+ num );
 	
 	clearTimeout( timeout );
-	$increment.removeClass( 'disable' );
+	$manual.removeClass( 'disable' );
 	
 	$.post( 'enhance.php', { bash: './backdrop.py state' }, function( state ) {
 		if ( state.indexOf( updnid ) !== -1 ) {
@@ -271,27 +284,24 @@ $( '.updn, .oupdn' ).click( function() {
 			setButtonOff( num )
 			$.post( 'enhance.php', { bash: './backdrop.py '+ pairid } );
 		} else {
-			setButtonOn( $updn, $oupdn, $increment )
-			timeout = setTimeout( function() {
-				setButtonOff( num )
-			}, ms );
+			setButtonOn( $updn, $oupdn, $manual )
 			$.post( 'enhance.php', { bash: './backdrop.py '+ updnid +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
 		}
 	} );
 } );
-function setButtonOn( $updn, $oupdn, $increment ) {
+function setButtonOn( $updn, $oupdn, $manual ) {
 	$updn.addClass( 'hide' );
 	$oupdn.removeClass( 'hide' );
-	$increment.addClass( 'disable' );
+	$manual.addClass( 'disable' );
 }
 function setButtonOff( num ) {
 	$( '#up'+ num +', #dn'+ num ).removeClass( 'hide' );
 	$( '#oup'+ num +', #odn'+ num ).addClass( 'hide' );
-	$( '#increment-up'+ num +', #increment-dn'+ num ).removeClass( 'disable' );
+	$( '#manual-up'+ num +', #manual-dn'+ num ).removeClass( 'disable' );
 }
 var tap = 0;
 $.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
-$( '.increment' ).on( 'touchstart mousedown', function() {
+$( '.manual' ).on( 'touchstart mousedown', function() {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
 	tap = 1; // set to suppress touchend on tap
@@ -299,13 +309,13 @@ $( '.increment' ).on( 'touchstart mousedown', function() {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
 	var ms = 100;
-	var updnid = this.id.replace( 'increment-', '' );
+	var updnid = this.id.replace( 'manual-', '' );
 	$.post( 'enhance.php', { bash: './backdrop.py '+ updnid +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
 } ).taphold( function( e ) {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
 	tap = 0; // clear to allow touchend
-	var updnid = this.id.replace( 'increment-', '' );
+	var updnid = this.id.replace( 'manual-', '' );
 	var ms = $( '#ms-'+ updnid ).val();
 	$.post( 'enhance.php', { bash: './backdrop.py '+ updnid +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
 } ).on( 'touchend mouseup', function() {
@@ -316,7 +326,7 @@ $( '.increment' ).on( 'touchstart mousedown', function() {
 		return
 	}
 	
-	var updnid = this.id.replace( 'increment-', '' );
+	var updnid = this.id.replace( 'manual-', '' );
 	$.post( 'enhance.php', { bash: './backdrop.py '+ updnid } );
 } );
 $( '#setting' ).click( function() {
@@ -341,21 +351,21 @@ function set() {
 	$( '#title' ).text( 'ตั้ ง ค่ า' );
 	$( '.ms, .setting, .inputname' ).removeClass( 'hide' );
 	$( '.updn, #setting, .name' ).addClass( 'hide' );
-	$( '.increment' ).addClass( 'disable' );
+	$( '.manual' ).addClass( 'disable' );
 	$( '.ms' ).css( 'vertical-align', '4px' );
 	$( '.number' ).css( 'vertical-align', '0' );
 	$( '.boxed-group.unused' ).removeClass( 'hide' );
-	$( '.increment' ).toggleClass( 'hide', window.innerWidth <= 480 );
+	$( '.manual' ).addClass( 'hide' );
 }
 function restore() {
 	$( '#title' ).text( 'ค ว บ คุ ม' );
 	$( '.ms, .setting, .inputname' ).addClass( 'hide' );
 	$( '.updn, #setting, .name' ).removeClass( 'hide' );
-	$( '.increment' ).removeClass( 'disable' );
+	$( '.manual' ).removeClass( 'disable' );
 	$( '.ms' ).css( 'vertical-align', '' );
 	$( '.number' ).css( 'vertical-align', '' );
 	$( '.boxed-group.unused' ).addClass( 'hide' );
-	$( '.increment' ).removeClass( 'hide' );
+	$( '.manual' ).removeClass( 'hide' );
 }
 </script>
 </body>

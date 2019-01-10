@@ -3,6 +3,8 @@ import RPi.GPIO as GPIO
 import sys
 import time
 import json
+import urllib
+import urllib2
 
 ON = 1
 OFF = 0
@@ -42,3 +44,9 @@ second = float( sys.argv[ 2 ] )
 GPIO.output( pin, ON )
 time.sleep( second )
 GPIO.output( pin, OFF )
+# broadcast pushstream
+url = 'http://localhost/pub?id=backdrops'
+headerdata = { 'Content-type': 'application/json', 'Accept': 'application/json' }
+data = { 'pin': arg1 }
+req = urllib2.Request( url, json.dumps( data ), headers = headerdata )
+response = urllib2.urlopen( req )
