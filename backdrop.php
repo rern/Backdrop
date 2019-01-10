@@ -93,11 +93,12 @@
 	.ms.dn {
 		background: rgba(174, 65, 49, .7);
 	}
-	.updn {
+	.updn,
+	.oupdn {
 		display: inline-block;
 		width: 70px;
 		margin: 0 5px;
-		vertical-align: -5px;
+		vertical-align: -10px;
 		font-size: 64px;
 	}
 	.up {
@@ -105,6 +106,12 @@
 	}
 	.dn {
 		color: #ae4131;
+	}
+	.oup {
+		color: #00ff00;
+	}
+	.odn {
+		color: #ff0000;
 	}
 	.increment,
 	.number,
@@ -153,7 +160,7 @@
 		background: #e0e7ee;
 	}
 	@keyframes blinkdot {
-		50% { opacity: 0.3 }
+		50% { opacity: 0.5 }
 	}
 	.blink {
 		animation: 1s blinkdot infinite;
@@ -200,6 +207,7 @@ foreach ( range( 7, 1 ) as $i ) {
 	<div class="boxed-group'.$unused.'">
 		<i id="increment-up'.$i.'" class="increment fa fa-arrow-up-circle"></i>
 		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle"></i>
+		<i id="oup'.$i.'" class="oupdn oup fa fa-arrow-up-circle blink hide"></i>
 		<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms up hide" value="'.$up[ $i - 1 ].'">
 		<div class="label">
 			<div class="number">'.$i.'</div>
@@ -207,6 +215,7 @@ foreach ( range( 7, 1 ) as $i ) {
 			<input id="inputname'.$i.'" name="inputname'.$i.'" type="text" class="inputname hide" value="'.( $name[ $i - 1 ] == '0' ? '' : $name[ $i - 1 ] ).'">
 		</div>
 		<i id="dn'.$i.'" class="updn dn fa fa-arrow-down-circle"></i>
+		<i id="odn'.$i.'" class="oupdn odn fa fa-arrow-down-circle blink hide"></i>
 		<input id="ms-dn'.$i.'" name="ms-dn'.$i.'" type="text" class="ms dn hide" value="'.$dn[ $i - 1 ].'">
 		<i id="increment-dn'.$i.'" class="increment fa fa-arrow-down-circle"></i>
 	</div>
@@ -226,44 +235,60 @@ $( '.name, .inputname' ).css( 'width', nameW + 12 );
 
 $.post( 'enhance.php', { bash: './backdrop.py state' }, function( state ) {
 	var state = JSON.parse( state );
-	if ( !state.length ) {
-		$( '.increment' ).removeClass( 'disable' );
-		$( '.updn' ).removeClass( 'blink' );
-	} else {
-		$( '.increment' ).addClass( 'disable' );
-		$.each( state, function( i, val ) {
-			$( '#'+ val ).addClass( 'blink' );
-		} );
-	}
+	$( '.updn' ).removeClass( 'hide' );
+	$( '.oupdn' ).addClass( 'hide' );
+	$( '.increment' ).removeClass( 'disable' );
+	if ( !state.length ) return
+	
+	$.each( state, function( i, updnid ) {
+		$( '#'+ updnid ).addClass( 'hide' );
+		$( '#o'+ updnid ).removeClass( 'hide' );
+		var num = updnid.slice( -1 );
+		$( '#increment-up'+ num +', #increment-dn'+ num ).addClass( 'disable' );
+	} );
 } );
 var timeout;
-$( '.btn' ).click( function() {
-	var $this = $( this );
-	var updn = this.id
-	var num = updn.slice( -1 );
-	var pair = updn.slice( 0, 2 ) === 'up' ? 'dn'+ num : 'up'+ num
-	var ms = $( '#ms-'+ this.id ).val();
+$( '.updn, .oupdn' ).click( function() {
+	var updnid = this.id[ 0 ] !== 'o' ? this.id : this.id.slice( 1 );
+	var updn = updnid.slice( 0, 2 );
+	var num = updnid.slice( -1 );
+	var pairid = updn === 'up' ? 'dn'+ num : 'up'+ num
+	var ms = $( '#ms-'+ updnid ).val();
+	
+	var $updn = $( '#'+ updnid );
+	var $pair = $( '#'+ pairid );
+	var $oupdn = $( '#o'+ updn + num );
+	var $increment = $( '#increment-up'+ num +', #increment-dn'+ num );
+	
 	clearTimeout( timeout );
-	$( '#increment-'+ updn +', #increment-'+ pair ).removeClass( 'disable' );
-	if ( $this.hasClass( 'blink' ) ) {
-		$this.removeClass( 'blink' );
-		$.post( 'enhance.php', { bash: './backdrop.py '+ updn } );
-	} else {
-		if ( $( '#'+ pair ).hasClass( 'blink' ) ) {
-			$( '#'+ pair ).removeClass( 'blink' )
-			$.post( 'enhance.php', { bash: './backdrop.py '+ pair } );
-			return
+	$increment.removeClass( 'disable' );
+	
+	$.post( 'enhance.php', { bash: './backdrop.py state' }, function( state ) {
+		if ( state.indexOf( updnid ) !== -1 ) {
+			setButtonOff( num )
+			$.post( 'enhance.php', { bash: './backdrop.py '+ updnid } );
+		} else if ( state.indexOf( pairid ) !== -1 ) {
+			setButtonOff( num )
+			$.post( 'enhance.php', { bash: './backdrop.py '+ pairid } );
+		} else {
+			setButtonOn( $updn, $oupdn, $increment )
+			timeout = setTimeout( function() {
+				setButtonOff( num )
+			}, ms );
+			$.post( 'enhance.php', { bash: './backdrop.py '+ updnid +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
 		}
-		
-		$this.addClass( 'blink' );
-		$( '#increment-'+ updn +', #increment-'+ pair ).addClass( 'disable' );
-		timeout = setTimeout( function() {
-			$this.removeClass( 'blink' );
-			$( '#increment-'+ updn +', #increment-'+ pair ).removeClass( 'disable' );
-		}, ms );
-		$.post( 'enhance.php', { bash: './backdrop.py '+ updn +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
-	}
+	} );
 } );
+function setButtonOn( $updn, $oupdn, $increment ) {
+	$updn.addClass( 'hide' );
+	$oupdn.removeClass( 'hide' );
+	$increment.addClass( 'disable' );
+}
+function setButtonOff( num ) {
+	$( '#up'+ num +', #dn'+ num ).removeClass( 'hide' );
+	$( '#oup'+ num +', #odn'+ num ).addClass( 'hide' );
+	$( '#increment-up'+ num +', #increment-dn'+ num ).removeClass( 'disable' );
+}
 var tap = 0;
 $.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
 $( '.increment' ).on( 'touchstart mousedown', function() {
@@ -274,15 +299,15 @@ $( '.increment' ).on( 'touchstart mousedown', function() {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
 	var ms = 100;
-	var updn = this.id.replace( 'increment-', '' );
-	$.post( 'enhance.php', { bash: './backdrop.py '+ updn +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
+	var updnid = this.id.replace( 'increment-', '' );
+	$.post( 'enhance.php', { bash: './backdrop.py '+ updnid +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
 } ).taphold( function( e ) {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
 	tap = 0; // clear to allow touchend
-	var updn = this.id.replace( 'increment-', '' );
-	var ms = $( '#ms-'+ updn ).val();
-	$.post( 'enhance.php', { bash: './backdrop.py '+ updn +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
+	var updnid = this.id.replace( 'increment-', '' );
+	var ms = $( '#ms-'+ updnid ).val();
+	$.post( 'enhance.php', { bash: './backdrop.py '+ updnid +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
 } ).on( 'touchend mouseup', function() {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
@@ -291,8 +316,8 @@ $( '.increment' ).on( 'touchstart mousedown', function() {
 		return
 	}
 	
-	var updn = this.id.replace( 'increment-', '' );
-	$.post( 'enhance.php', { bash: './backdrop.py '+ updn } );
+	var updnid = this.id.replace( 'increment-', '' );
+	$.post( 'enhance.php', { bash: './backdrop.py '+ updnid } );
 } );
 $( '#setting' ).click( function() {
 	if ( !$( '.updn' ).hasClass( 'blink' ) ) set();
@@ -317,7 +342,7 @@ function set() {
 	$( '.ms, .setting, .inputname' ).removeClass( 'hide' );
 	$( '.updn, #setting, .name' ).addClass( 'hide' );
 	$( '.increment' ).addClass( 'disable' );
-	$( '.ms' ).css( 'vertical-align', '10px' );
+	$( '.ms' ).css( 'vertical-align', '4px' );
 	$( '.number' ).css( 'vertical-align', '0' );
 	$( '.boxed-group.unused' ).removeClass( 'hide' );
 	$( '.increment' ).toggleClass( 'hide', window.innerWidth <= 480 );

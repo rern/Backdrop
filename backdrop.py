@@ -14,15 +14,15 @@ GPIO.setwarnings( 0 )
 GPIO.setmode( GPIO.BOARD )
 GPIO.setup( pinUPlist + pinDNlist, GPIO.OUT )
 
-stateON = []
-for i in range( 0, 6 ):
-	if GPIO.input( pinUPlist[ i ] ) == 1:
-		stateON.append( 'up'+ str( i + 1 ) )
-	if GPIO.input( pinDNlist[ i ] ) == 1:
-		stateON.append( 'dn'+ str( i + 1 ) )
-		
 arg1 = sys.argv[ 1 ]
 if arg1 == 'state':
+	stateON = []
+	for i in range( 0, 7 ):
+		if GPIO.input( pinUPlist[ i ] ) == 1:
+			stateON.append( 'up'+ str( i + 1 ) )
+		if GPIO.input( pinDNlist[ i ] ) == 1:
+			stateON.append( 'dn'+ str( i + 1 ) )
+
 	print( json.dumps( stateON ) )
 	exit()
 
