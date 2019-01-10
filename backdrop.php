@@ -338,7 +338,7 @@ $( '.manual' ).on( 'touchstart mousedown', function() {
 	$.post( 'enhance.php', { bash: './backdrop.py '+ updnid } );
 } );
 $( '#setting' ).click( function() {
-	if ( !$( '.updn' ).hasClass( 'blink' ) ) set();
+	if ( !$( '.updn' ).hasClass( 'hide' ) ) set();
 } );
 $( '#save' ).click( function() {
 	$.post( 'backdropsave.php', $( '#formms').serialize(), function() {
