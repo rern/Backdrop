@@ -87,12 +87,6 @@
 		text-align: center;
 		color: #e0e7ee;
 	}
-	.ms.up {
-		background: rgba(7, 97, 7, .5);
-	}
-	.ms.dn {
-		background: rgba(174, 65, 49, .7);
-	}
 	.updn,
 	.oupdn {
 		display: inline-block;
@@ -112,6 +106,14 @@
 	}
 	.odn {
 		color: #ff0000;
+	}
+	.msup {
+		color: ##e0e7ee;
+		background: rgba(7, 97, 7, .5);
+	}
+	.msdn {
+		color: ##e0e7ee;
+		background: rgba(174, 65, 49, .7);
 	}
 	.manual,
 	.number,
@@ -144,6 +146,7 @@
 		text-align: center;
 	}
 	.ms {
+		vertical-align: 4px;
 		font-size: 18px;
 	}
 	.name,
@@ -209,7 +212,7 @@ foreach ( range( 7, 1 ) as $i ) {
 		<i id="manual-up'.$i.'" class="manual fa fa-arrow-up-circle"></i>
 		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle"></i>
 		<i id="oup'.$i.'" class="oupdn oup fa fa-arrow-up-circle blink hide"></i>
-		<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms up hide" value="'.$up[ $i - 1 ].'">
+		<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms msup hide" value="'.$up[ $i - 1 ].'">
 		<div class="label">
 			<div class="number">'.$i.'</div>
 			<div id="name'.$i.'" class="name">'.( $name[ $i - 1 ] == '0' ? '&nbsp;' : $name[ $i - 1 ] ).'</div>
@@ -217,7 +220,7 @@ foreach ( range( 7, 1 ) as $i ) {
 		</div>
 		<i id="dn'.$i.'" class="updn dn fa fa-arrow-down-circle"></i>
 		<i id="odn'.$i.'" class="oupdn odn fa fa-arrow-down-circle blink hide"></i>
-		<input id="ms-dn'.$i.'" name="ms-dn'.$i.'" type="text" class="ms dn hide" value="'.$dn[ $i - 1 ].'">
+		<input id="ms-dn'.$i.'" name="ms-dn'.$i.'" type="text" class="ms msdn hide" value="'.$dn[ $i - 1 ].'">
 		<i id="manual-dn'.$i.'" class="manual fa fa-arrow-down-circle"></i>
 	</div>
 	';
@@ -241,25 +244,30 @@ var pushstream0 = new PushStream( {
 } );
 pushstream0.addChannel( 'backdrops' );
 pushstream0.onmessage = function( pinoff ) { // pinoff is array
+	if ( $( '#setting' ).hasClass( 'hide' ) ) return
+	
 	var num = pinoff[ 0 ].pin.slice( -1 );
 	setButtonOff( num )
 }
 pushstream0.connect();
 
-$.post( 'enhance.php', { bash: './backdrop.py state' }, function( state ) {
-	var state = JSON.parse( state );
-	$( '.updn' ).removeClass( 'hide' );
-	$( '.oupdn' ).addClass( 'hide' );
-	$( '.manual' ).removeClass( 'disable' );
-	if ( !state.length ) return
-	
-	$.each( state, function( i, updnid ) {
-		$( '#'+ updnid ).addClass( 'hide' );
-		$( '#o'+ updnid ).removeClass( 'hide' );
-		var num = updnid.slice( -1 );
-		$( '#manual-up'+ num +', #manual-dn'+ num ).addClass( 'disable' );
+function setButton() {
+	$.post( 'enhance.php', { bash: './backdrop.py state' }, function( state ) {
+		var state = JSON.parse( state );
+		$( '.updn' ).removeClass( 'hide' );
+		$( '.oupdn' ).addClass( 'hide' );
+		$( '.manual' ).removeClass( 'disable' );
+		if ( !state.length ) return
+		
+		$.each( state, function( i, updnid ) {
+			$( '#'+ updnid ).addClass( 'hide' );
+			$( '#o'+ updnid ).removeClass( 'hide' );
+			var num = updnid.slice( -1 );
+			$( '#manual-up'+ num +', #manual-dn'+ num ).addClass( 'disable' );
+		} );
 	} );
-} );
+}
+setButton();
 var timeout;
 $( '.updn, .oupdn' ).click( function() {
 	var updnid = this.id[ 0 ] !== 'o' ? this.id : this.id.slice( 1 );
@@ -349,23 +357,13 @@ $( '#save' ).click( function() {
 $( '#close' ).click( restore );
 function set() {
 	$( '#title' ).text( 'ตั้ ง ค่ า' );
-	$( '.ms, .setting, .inputname' ).removeClass( 'hide' );
-	$( '.updn, #setting, .name' ).addClass( 'hide' );
-	$( '.manual' ).addClass( 'disable' );
-	$( '.ms' ).css( 'vertical-align', '4px' );
-	$( '.number' ).css( 'vertical-align', '0' );
-	$( '.boxed-group.unused' ).removeClass( 'hide' );
-	$( '.manual' ).addClass( 'hide' );
+	$( '.ms, .setting, .inputname, .boxed-group.unused' ).removeClass( 'hide' );
+	$( '.manual, .updn, #setting, .name' ).addClass( 'hide' );
 }
 function restore() {
 	$( '#title' ).text( 'ค ว บ คุ ม' );
-	$( '.ms, .setting, .inputname' ).addClass( 'hide' );
-	$( '.updn, #setting, .name' ).removeClass( 'hide' );
-	$( '.manual' ).removeClass( 'disable' );
-	$( '.ms' ).css( 'vertical-align', '' );
-	$( '.number' ).css( 'vertical-align', '' );
-	$( '.boxed-group.unused' ).addClass( 'hide' );
-	$( '.manual' ).removeClass( 'hide' );
+	$( '.ms, .setting, .inputname, .boxed-group.unused' ).addClass( 'hide' );
+	$( '.manual, .updn, #setting, .name' ).removeClass( 'hide' );
 }
 </script>
 </body>
