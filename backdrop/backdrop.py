@@ -9,10 +9,6 @@ import urllib2
 ON = 1
 OFF = 0
 
-#pinOFFlist = [ 7,  8, 10, 12, 13, 15, 16 ]
-#pinUPlist = [ 18, 19, 21, 22, 23, 24, 26 ]
-#pinDNlist = [ 29, 31, 32, 33, 35, 36, 37 ]
-
 pinOFFlist = [ 7,  8, 10, 12, 18, 24, 35 ]
 pinUPlist = [  3, 16, 19, 21, 22, 23, 11 ]
 pinDNlist = [ 13, 26, 29, 31, 32, 33, 15 ]

@@ -7,9 +7,13 @@ import urllib2
 ON = 1
 OFF = 0
 
-#pinOFFlist = [ 7,  8, 10, 12, 13, 15, 16 ]
-#pinUPlist = [ 18, 19, 21, 22, 23, 24, 26 ]
-pinOFFlist = [ 3,  7,  8, 10, 12, 18, 24 ]
+# 26 avilable pins:
+#pinUPoffList = [  3,  5,  7,  8, 10, 11 ]  # 6 pins
+#pinDNoffList = [ 12, 13, 15, 16, 18, 19 ]  # 6 pins
+#pinUPlist = [ 21, 22, 23, 24, 26, 29, 31 ] # 7 pins
+#pinDNlist = [ 32, 33, 35, 36, 37, 38, 40 ] # 7 pins
+pinOFFlist = [ 7,  8, 10, 12, 18, 24, 35 ]
+pinUPlist = [  3, 16, 19, 21, 22, 23, 11 ]
 pinDNlist = [ 13, 26, 29, 31, 32, 33, 15 ]
 
 GPIO.setwarnings( 0 )
