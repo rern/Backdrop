@@ -250,32 +250,13 @@ var backdropphp = 'backdrop.php';
 var nameW = Math.max.apply( Math, $( '.name' ).map( function() { return $( this ).width(); } ).get() );
 $( '.name, .inputname' ).css( 'width', nameW + 10 );
 
-var pushstream0 = new PushStream( {
-	host: window.location.hostname,
-	port: window.location.port,
-	modes: 'websocket'
-} );
-pushstream0.addChannel( 'backdrop' );
-pushstream0.onmessage = function( pinoff ) { // pinoff is array
-	if ( manual === 1 || $( '#setting' ).hasClass( 'hide' ) ) return
-	
-	var updnid = pinoff[ 0 ].pin;
-	var updn = updnid.slice( 0, 2 );
-	var num = updnid.slice( -1 );
-	var pairid = updn === 'up' ? 'dn'+ num : 'up'+ num
-	setButtonOff( num )
-	$( '#'+ updnid ).addClass( 'disable' );
-	$( '#'+ pairid ).removeClass( 'disable' );
-}
-pushstream0.connect();
-
 function setButton() {
 	$.post( backdropphp, { bash: backdroppy +'state' }, function( state ) {
 		var state = JSON.parse( state );
 		$( '.updn' ).removeClass( 'hide' );
 		$( '.oupdn' ).addClass( 'hide' );
-		$( '.manual, .updn.dn' ).removeClass( 'disable' );
-		if ( !state.on.length && !state.dn.length ) return
+		$( '.manual, .updn' ).removeClass( 'disable' );
+		if ( !state.on.length && !state.limitActive.length ) return
 		
 		$.each( state.on, function( i, updnid ) {
 			$( '#'+ updnid ).addClass( 'hide' );
@@ -283,21 +264,46 @@ function setButton() {
 			var num = updnid.slice( -1 );
 			$( '#manual-up'+ num +', #manual-dn'+ num ).addClass( 'disable' );
 		} );
-		$.each( state.dn, function( i, num ) {
-			$( '#up'+ num ).removeClass( 'disable' );
-			$( '#dn'+ num ).addClass( 'disable' );
+		$.each( state.limitActive, function( i, updnid ) {
+			$( '#'+ updnid ).addClass( 'disable' );
 		} );
 	} );
 }
 setButton();
+document.addEventListener( 'visibilitychange', function() {
+	if ( !document.hidden ) setButton();
+} );
+
+var pushstream = new PushStream( {
+	host: window.location.hostname,
+	port: window.location.port,
+	modes: 'websocket'
+} );
+pushstream.addChannel( 'backdrop' );
+pushstream.onmessage = function( limit ) {
+	console.log(limit)
+	if ( manual === 1 || $( '#setting' ).hasClass( 'hide' ) ) return
+	
+	var limit = limit[ 0 ]; // limit is array
+	var updnid = limit.pin;
+	var updn = updnid.slice( 0, 2 );
+	var num = updnid.slice( -1 );
+	var pairid = ( updn === 'up' ? 'dn' : 'up' ) + num
+	
+	$( '#'+ updnid ).toggleClass( 'disable', limit.active );
+	$( '#'+ pairid ).toggleClass( 'disable', !limit.active );
+	setButtonOff( num )
+}
+pushstream.connect();
+
 $( '.updn, .oupdn' ).click( function() {
 	manual = 0;
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
-	var updnid = this.id[ 0 ] !== 'o' ? this.id : this.id.slice( 1 );
+	var updnid = this.id.replace( 'o', '' );
 	var updn = updnid.slice( 0, 2 );
 	var num = updnid.slice( -1 );
-	var pairid = updn === 'up' ? 'dn'+ num : 'up'+ num
+	var pairid = ( updn === 'up' ? 'dn' : 'up' ) + num
 	var ms = $( '#ms-'+ updnid ).val();
 	
 	var $updn = $( '#'+ updnid );
@@ -308,19 +314,19 @@ $( '.updn, .oupdn' ).click( function() {
 	clearTimeout( timeout );
 	$manual.removeClass( 'disable' );
 	
-	$.post( backdropphp, { bash: backdroppy +'state' }, function( state ) {
-		if ( state.indexOf( updnid ) !== -1 ) {
-			setButtonOff( num )
+	if ( $( this ).hasClass( 'updn' ) ) {
+		if ( $pair.hasClass( 'hide' ) ) {
+			setButtonOff( num );
 			var command = updnid;
-		} else if ( state.indexOf( pairid ) !== -1 ) {
-			setButtonOff( num )
-			var command = pairid;
 		} else {
-			setButtonOn( $updn, $oupdn, $manual )
+			setButtonOn( $updn, $oupdn, $manual );
 			var command = updnid +' '+ ( ms / 1000 ) +' &> /dev/null &';
 		}
-		$.post( backdropphp, { bash: backdroppy + command } );
-	} );
+	} else {
+		setButtonOff( num );
+		var command = updnid;
+	}
+	$.post( backdropphp, { bash: backdroppy + command } );
 } );
 function setButtonOn( $updn, $oupdn, $manual ) {
 	$updn.addClass( 'hide' );
@@ -350,7 +356,7 @@ $( '.manual' ).on( 'touchstart mousedown', function() {
 	tap = 0; // clear to allow touchend
 	var updnid = this.id.replace( 'manual-', '' );
 	var ms = $( '#ms-'+ updnid ).val();
-	$.post( 'enhance.php', { bash: backdroppy + updnid +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
+	$.post( backdropphp, { bash: backdroppy + updnid +' '+ ( ms / 1000 ) +' &> /dev/null &' } );
 } ).on( 'touchend mouseup', function() {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	

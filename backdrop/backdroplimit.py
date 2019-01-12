@@ -1,33 +1,30 @@
 #!/usr/bin/python
-import RPi.GPIO as GPIO
-import json
-import urllib
-import urllib2
+from backdropgpio import *
 
-ON = 1
-OFF = 0
+# when 'dark' detected -  set pin OFF, broadcast 'id + active'
+# when 'light' detected - broadcast 'id + inActive'
 
-# 26 avilable pins:
-#pinUPoffList = [  3,  5,  7,  8, 10, 11 ]  # 6 pins
-#pinDNoffList = [ 12, 13, 15, 16, 18, 19 ]  # 6 pins
-#pinUPlist = [ 21, 22, 23, 24, 26, 29, 31 ] # 7 pins
-#pinDNlist = [ 32, 33, 35, 36, 37, 38, 40 ] # 7 pins
-pinOFFlist = [ 7,  8, 10, 12, 18, 24, 35 ]
-pinUPlist = [  3, 16, 19, 21, 22, 23, 11 ]
-pinDNlist = [ 13, 26, 29, 31, 32, 33, 15 ]
+url = 'http://localhost/pub?id=backdrop'
+headerdata = { 'Content-type': 'application/json', 'Accept': 'application/json' }
 
-GPIO.setwarnings( 0 )
-GPIO.setmode( GPIO.BOARD )
-GPIO.setup( pinOFFist, GPIO.IN )
-
-def pinOff( i ):  
-	GPIO.output( pinDNlist[ i ], OFF )
-	# broadcast pushstream
-	url = 'http://localhost/pub?id=backdrop'
-	headerdata = { 'Content-type': 'application/json', 'Accept': 'application/json' }
-	data = { 'pin': 'dn'+ str( i ) }
+def limitChange( i, updn ):
+	active = 0
+	if updn == 'up':
+		if GPIO.input( pinLimitUPlist[ i ] ) == 1: # 1 = dark
+			GPIO.output( pinUPlist[ i ], OFF )
+			active = 1
+	else:
+		if GPIO.input( pinLimitDNlist[ i ] ) == 1:
+			GPIO.output( pinUPlist[ i ], OFF )
+			active = 1
+	
+	data = { 'pin': updn + str( i ), 'active': active }
 	req = urllib2.Request( url, json.dumps( data ), headers = headerdata )
 	response = urllib2.urlopen( req )
-		
+# bash: curl -s -v -X POST 'http://localhost/pub?id=backdrop' -d '{ "pin": "dn7", "active": 1 }'
+	
 for i in range( 0, 7 ):
-	GPIO.add_event_detect( pinOFFlist[ i ], GPIO.RISING, callback = pinOff( i ) )
+	if pinLimitUPlist[ i ]:
+		GPIO.add_event_detect( pinLimitUPlist[ i ], GPIO.BOTH, callback = lambda channel: limitChange( i, 'up' ) )
+	if pinLimitDNlist[ i ]:
+		GPIO.add_event_detect( pinLimitDNlist[ i ], GPIO.BOTH, callback = lambda channel: limitChange( i, 'dn' ) )

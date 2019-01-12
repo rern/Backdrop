@@ -1,23 +1,7 @@
 #!/usr/bin/python
-import RPi.GPIO as GPIO
+from backdropgpio import *
 import sys
 import time
-import json
-import urllib
-import urllib2
-
-ON = 1
-OFF = 0
-
-pinOFFlist = [ 7,  8, 10, 12, 18, 24, 35 ]
-pinUPlist = [  3, 16, 19, 21, 22, 23, 11 ]
-pinDNlist = [ 13, 26, 29, 31, 32, 33, 15 ]
-pinList = pinUPlist + pinDNlist
-
-GPIO.setwarnings( 0 )
-GPIO.setmode( GPIO.BOARD )
-GPIO.setup( pinList, GPIO.OUT )
-GPIO.setup( pinOFFlist, GPIO.IN )
 
 arg1 = sys.argv[ 1 ]
 if arg1 == 'set':
@@ -25,17 +9,19 @@ if arg1 == 'set':
 	exit()
 	
 if arg1 == 'state':
-	stateON = []
-	stateDN = []
+	OnList = []
+	limitActiveList = []
 	for i in range( 0, 7 ):
-		if GPIO.input( pinUPlist[ i ] ) == ON:
-			stateON.append( 'up'+ str( i + 1 ) )
-		if GPIO.input( pinDNlist[ i ] ) == ON:
-			stateON.append( 'dn'+ str( i + 1 ) )
-		if GPIO.input( pinOFFlist[ i ] ) == ON:
-			stateDN.append( str( i + 1 ) )
+		if pinUPlist[ i ] and GPIO.input( pinUPlist[ i ] ) == ON:
+			OnList.append( 'up'+ str( i + 1 ) )
+		if pinDNlist[ i ] and GPIO.input( pinDNlist[ i ] ) == ON:
+			OnList.append( 'dn'+ str( i + 1 ) )
+		if pinLimitUPlist[ i ] and GPIO.input( pinLimitUPlist[ i ] ) == ON:
+			limitActiveList.append( 'up'+ str( i + 1 ) )
+		if pinLimitDNlist[ i ] and GPIO.input( pinLimitDNlist[ i ] ) == ON:
+			limitActiveList.append( 'dn'+ str( i + 1 ) )
 
-	print( json.dumps( { 'on': stateON, 'dn': stateDN } ) )
+	print( json.dumps( { 'on': OnList, 'limitActive': limitActiveList } ) )
 	exit()
 
 UpDn = arg1[ :2 ]
@@ -50,7 +36,10 @@ if len( sys.argv ) == 2:
 	GPIO.output( pin, OFF )
 	exit()
 	
-if UpDn == 'dn' and GPIO.input( pinOFFlist[ i ] ) == ON:
+# prevent moving if limit already active
+if UpDn == 'up' and GPIO.input( pinLimitUPlist[ i ] ) == ON:
+	exit()
+if UpDn == 'dn' and GPIO.input( pinLimitDNlist[ i ] ) == ON:
 	exit()
 	
 second = float( sys.argv[ 2 ] )
@@ -58,9 +47,10 @@ second = float( sys.argv[ 2 ] )
 GPIO.output( pin, ON )
 time.sleep( second )
 GPIO.output( pin, OFF )
-# broadcast pushstream
+
+# testing only
 url = 'http://localhost/pub?id=backdrop'
 headerdata = { 'Content-type': 'application/json', 'Accept': 'application/json' }
-data = { 'pin': arg1 }
+data = { 'pin': arg1, 'active': 1 }
 req = urllib2.Request( url, json.dumps( data ), headers = headerdata )
 response = urllib2.urlopen( req )
