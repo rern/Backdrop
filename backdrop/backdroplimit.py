@@ -1,8 +1,9 @@
 #!/usr/bin/python
-from backdropgpio import *
 
-# when 'dark' detected -  set pin OFF, broadcast 'id + active'
-# when 'light' detected - broadcast 'id + inActive'
+# 'dark marker' detected > set pin OFF, broadcast 'buttonid + active 1' > disable button
+# 'no marker'   detected >              broadcast 'buttonid + active 0' > enable button
+
+from backdropgpio import *
 
 url = 'http://localhost/pub?id=backdrop'
 headerdata = { 'Content-type': 'application/json', 'Accept': 'application/json' }

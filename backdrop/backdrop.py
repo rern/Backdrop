@@ -1,27 +1,32 @@
 #!/usr/bin/python
+
+# Auto, large buttons, always OFF at limits
+# Maual, small buttons, can keep ON pass limits
+# Both auto and manual have OFF timers in case limits not detected
+
 from backdropgpio import *
 import sys
 import time
 
 arg1 = sys.argv[ 1 ]
 if arg1 == 'set':
-	GPIO.output( List, OFF )
+	GPIO.output( pinList, OFF )
 	exit()
 	
 if arg1 == 'state':
-	OnList = []
+	onList = []
 	limitActiveList = []
 	for i in range( 0, 7 ):
 		if pinUPlist[ i ] and GPIO.input( pinUPlist[ i ] ) == ON:
-			OnList.append( 'up'+ str( i + 1 ) )
+			onList.append( 'up'+ str( i + 1 ) )
 		if pinDNlist[ i ] and GPIO.input( pinDNlist[ i ] ) == ON:
-			OnList.append( 'dn'+ str( i + 1 ) )
+			onList.append( 'dn'+ str( i + 1 ) )
 		if pinLimitUPlist[ i ] and GPIO.input( pinLimitUPlist[ i ] ) == ON:
 			limitActiveList.append( 'up'+ str( i + 1 ) )
 		if pinLimitDNlist[ i ] and GPIO.input( pinLimitDNlist[ i ] ) == ON:
 			limitActiveList.append( 'dn'+ str( i + 1 ) )
 
-	print( json.dumps( { 'on': OnList, 'limitActive': limitActiveList } ) )
+	print( json.dumps( { 'on': onList, 'limitActive': limitActiveList } ) )
 	exit()
 
 UpDn = arg1[ :2 ]
@@ -36,7 +41,7 @@ if len( sys.argv ) == 2:
 	GPIO.output( pin, OFF )
 	exit()
 	
-# prevent moving if limit already active
+# prevent auto if limit already reach
 if UpDn == 'up' and GPIO.input( pinLimitUPlist[ i ] ) == ON:
 	exit()
 if UpDn == 'dn' and GPIO.input( pinLimitDNlist[ i ] ) == ON:

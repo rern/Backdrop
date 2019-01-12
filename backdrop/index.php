@@ -217,7 +217,7 @@ foreach ( range( 7, 1 ) as $i ) {
 	$html.='
 	<div class="boxed-group'.$unused.'">
 		<i id="manual-up'.$i.'" class="manual fa fa-arrow-up-circle"></i>
-		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle disable"></i>
+		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle"></i>
 		<i id="oup'.$i.'" class="oupdn oup fa fa-arrow-up-circle blink hide"></i>
 		<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms msup hide" value="'.$up[ $i - 1 ].'">
 		<div class="label">
@@ -258,14 +258,14 @@ function setButton() {
 		$( '.manual, .updn' ).removeClass( 'disable' );
 		if ( !state.on.length && !state.limitActive.length ) return
 		
+		$.each( state.limitActive, function( i, updnid ) {
+			$( '#'+ updnid ).addClass( 'disable' );
+		} );
 		$.each( state.on, function( i, updnid ) {
 			$( '#'+ updnid ).addClass( 'hide' );
 			$( '#o'+ updnid ).removeClass( 'hide' );
 			var num = updnid.slice( -1 );
 			$( '#manual-up'+ num +', #manual-dn'+ num ).addClass( 'disable' );
-		} );
-		$.each( state.limitActive, function( i, updnid ) {
-			$( '#'+ updnid ).addClass( 'disable' );
 		} );
 	} );
 }
