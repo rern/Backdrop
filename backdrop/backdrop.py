@@ -6,7 +6,6 @@
 
 from backdropgpio import *
 import sys
-import time
 
 arg1 = sys.argv[ 1 ]
 if arg1 == 'set':
@@ -17,14 +16,12 @@ if arg1 == 'state':
 	onList = []
 	limitActiveList = []
 	for i in range( 0, 7 ):
-		if pinUPlist[ i ] and GPIO.input( pinUPlist[ i ] ) == ON:
+		if GPIO.input( pinUPlist[ i ] ) == ON:
 			onList.append( 'up'+ str( i + 1 ) )
-		if pinDNlist[ i ] and GPIO.input( pinDNlist[ i ] ) == ON:
+		if GPIO.input( pinDNlist[ i ] ) == ON:
 			onList.append( 'dn'+ str( i + 1 ) )
-		if pinLimitUPlist[ i ] and GPIO.input( pinLimitUPlist[ i ] ) == ON:
+		if GPIO.input( pinLimitlist[ i ] ) == ON:
 			limitActiveList.append( 'up'+ str( i + 1 ) )
-		if pinLimitDNlist[ i ] and GPIO.input( pinLimitDNlist[ i ] ) == ON:
-			limitActiveList.append( 'dn'+ str( i + 1 ) )
 
 	print( json.dumps( { 'on': onList, 'limitActive': limitActiveList } ) )
 	exit()
@@ -42,9 +39,7 @@ if len( sys.argv ) == 2:
 	exit()
 	
 # prevent auto if limit already reach
-if UpDn == 'up' and GPIO.input( pinLimitUPlist[ i ] ) == ON:
-	exit()
-if UpDn == 'dn' and GPIO.input( pinLimitDNlist[ i ] ) == ON:
+if UpDn == 'dn' and GPIO.input( pinLimitlist[ i ] ) == ON and len( sys.argv ) == 3:
 	exit()
 	
 second = float( sys.argv[ 2 ] )
@@ -53,6 +48,7 @@ GPIO.output( pin, ON )
 time.sleep( second )
 GPIO.output( pin, OFF )
 
+#exit()
 # testing only
 url = 'http://localhost/pub?id=backdrop'
 headerdata = { 'Content-type': 'application/json', 'Accept': 'application/json' }
