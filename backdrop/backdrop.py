@@ -20,7 +20,7 @@ if arg1 == 'state':
 			onList.append( 'up'+ str( i + 1 ) )
 		if GPIO.input( pinDNlist[ i ] ) == ON:
 			onList.append( 'dn'+ str( i + 1 ) )
-		if GPIO.input( pinLimitlist[ i ] ) == ON:
+		if GPIO.input( pinLimitList[ i ] ) == ON:
 			limitActiveList.append( i + 1 )
 
 	print( json.dumps( { 'on': onList, 'limitActive': limitActiveList } ) )
@@ -39,7 +39,7 @@ if len( sys.argv ) == 2:
 	exit()
 	
 # prevent auto if limit already reach
-if UpDn == 'dn' and GPIO.input( pinLimitlist[ i ] ) == ON and len( sys.argv ) == 3:
+if UpDn == 'dn' and GPIO.input( pinLimitList[ i ] ) == ON and len( sys.argv ) == 3:
 	exit()
 	
 second = float( sys.argv[ 2 ] )

@@ -15,7 +15,7 @@ def limitON( i ):
 	# bash: curl -s -v -X POST 'http://localhost/pub?id=backdrop' -d '{ "updn": "dn", "num": 7 }'
 	
 for i in range( 0, 7 ):
-	pin = pinLimitlist[ i ]
+	pin = pinLimitList[ i ]
 	GPIO.add_event_detect( pin, GPIO.FALLING, callback = lambda channel: limitON( i ), bouncetime = 300 )
 
 while True:
