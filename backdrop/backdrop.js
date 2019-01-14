@@ -8,6 +8,8 @@ var backdropphp = 'backdrop.php';
 var nameW = Math.max.apply( Math, $( '.name' ).map( function() { return $( this ).width(); } ).get() );
 $( '.name, .inputname' ).css( 'width', nameW + 10 );
 
+setButton();
+
 document.addEventListener( 'visibilitychange', function() {
 	if ( !document.hidden ) setButton();
 } );
@@ -22,14 +24,13 @@ pushstream.onmessage = function( limit ) {
 	if ( manual === 1 || $( '#setting' ).hasClass( 'hide' ) ) return
 	
 	var limit = limit[ 0 ]; // limit is array
-	var updnid = limit.updnid;
-	var updn = updnid.slice( 0, 2 );
-	var num = updnid.slice( -1 );
+	var updn = limit.updn;
+	var num = limit.num;
+	var updnid = updn + num
 	var pairid = ( updn === 'up' ? 'dn' : 'up' ) + num
 	
-	$( '.updn' ).addClass( 'disable' );
-	$( '#'+ updnid ).toggleClass( 'disable', limit.active );
-	$( '#'+ pairid ).toggleClass( 'disable', !limit.active );
+	$( '#'+ updnid ).addClass( 'disable' );
+	$( '#'+ pairid ).removeClass( 'disable' );
 	setButtonOff( num )
 }
 pushstream.connect();
@@ -118,11 +119,13 @@ function setButton() {
 		var state = JSON.parse( state );
 		$( '.updn' ).removeClass( 'hide' );
 		$( '.oupdn' ).addClass( 'hide' );
-		$( '.manual, .updn' ).removeClass( 'disable' );
+		$( '.manual, .dn' ).removeClass( 'disable' );
+		$( '.up' ).addClass( 'disable' );
 		if ( !state.on.length && !state.limitActive.length ) return
 		
-		$.each( state.limitActive, function( i, updnid ) {
-			$( '#'+ updnid ).addClass( 'disable' );
+		$.each( state.limitActive, function( i, num ) {
+			$( '#up'+ num ).removeClass( 'disable' );
+			$( '#dn'+ num ).addClass( 'disable' );
 		} );
 		$.each( state.on, function( i, updnid ) {
 			$( '#'+ updnid ).addClass( 'hide' );
@@ -132,7 +135,6 @@ function setButton() {
 		} );
 	} );
 }
-setButton();
 function setButtonOn( $updn, $oupdn, $manual ) {
 	$updn.addClass( 'hide' );
 	$oupdn.removeClass( 'hide' );

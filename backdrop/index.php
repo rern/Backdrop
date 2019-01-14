@@ -38,7 +38,7 @@ foreach ( range( 7, 1 ) as $i ) {
 	$html.='
 	<div class="boxed-group'.$unused.'">
 		<i id="manual-up'.$i.'" class="manual fa fa-arrow-up-circle"></i>
-		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle"></i>
+		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle disable"></i>
 		<i id="oup'.$i.'" class="oupdn oup fa fa-arrow-up-circle blink hide"></i>
 		<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms msup hide" value="'.$up[ $i - 1 ].'">
 		<div class="label">

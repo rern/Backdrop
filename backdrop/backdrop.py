@@ -5,9 +5,9 @@
 # Both auto and manual have OFF timers in case limits not detected
 
 from backdropgpio import *
-import sys
 
 arg1 = sys.argv[ 1 ]
+
 if arg1 == 'set':
 	GPIO.output( pinList, OFF )
 	exit()
@@ -21,7 +21,7 @@ if arg1 == 'state':
 		if GPIO.input( pinDNlist[ i ] ) == ON:
 			onList.append( 'dn'+ str( i + 1 ) )
 		if GPIO.input( pinLimitlist[ i ] ) == ON:
-			limitActiveList.append( 'up'+ str( i + 1 ) )
+			limitActiveList.append( i + 1 )
 
 	print( json.dumps( { 'on': onList, 'limitActive': limitActiveList } ) )
 	exit()
@@ -48,10 +48,7 @@ GPIO.output( pin, ON )
 time.sleep( second )
 GPIO.output( pin, OFF )
 
-#exit()
-# testing only
-url = 'http://localhost/pub?id=backdrop'
-headerdata = { 'Content-type': 'application/json', 'Accept': 'application/json' }
-data = { 'pin': arg1, 'active': 1 }
-req = urllib2.Request( url, json.dumps( data ), headers = headerdata )
-response = urllib2.urlopen( req )
+if UpDn == 'up':
+	data = { 'updn': 'up', 'num': i + 1 }
+	req = urllib2.Request( url, json.dumps( data ), headers = headerdata )
+	response = urllib2.urlopen( req )
