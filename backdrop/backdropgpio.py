@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # Each set:
-# 1 x limitUP - timer    > disable buttons (2nd limit: hardware limit switch)
+# 1 x limitUP - infrared > disable buttons (2nd limit: timer)
 # 1 x UP      - web page > output
 # 1 x DN      - web page > output
 # 1 x limitDN - infrared > input OFF       (2nd limit: timer)
@@ -19,14 +19,16 @@ increment = 0.05
 url = 'http://localhost/pub?id=backdrop'
 headerdata = { 'Content-type': 'application/json', 'Accept': 'application/json' }
 
-pinUPlist = [  5,  7,  8, 23, 11, 13, 10 ]
-pinDNlist = [ 15, 16, 18, 19, 21, 22, 12 ]
+pinUpList = [ 12, 13, 15, None, None, None, 10 ]
+pinDnList = [ 18, 19, 21, None, None, None,  8 ]
 
 # 26 pins avilable
-# pinUPlist = [  5,  7,  8, 10, 11, 12, 13 ]
-# pinDNlist = [ 15, 16, 18, 19, 21, 22, 23 ]
-pinList = pinUPlist + pinDNlist
-pinLimitList = [ 32, 33, 35, 36, 37, 38, 40 ]
+# pinUpList = [ 12, 13, 15, None, None, None, 16 ]
+# pinDnList = [ 18, 19, 21, None, None, None, 22 ]
+pinList = [ p for p in pinUpList + pinDnList if p is not None ]
+pinUpLimitList = [ 23,32, 33, None, None, None, 35 ]
+pinDnLimitList = [ 36, 37, 38, None, None, None, 40 ]
+pinLimitList = [ p for p in pinUpLimitList + pinDnLimitList if p is not None ]
 
 GPIO.setwarnings( 0 )
 GPIO.setmode( GPIO.BOARD )

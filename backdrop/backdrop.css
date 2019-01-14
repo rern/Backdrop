@@ -27,7 +27,7 @@ body {
 	font-family: 'DSN_Kamon';
 }
 .container {
-	height: 100vh;
+	height: 100%;
 	max-width: 640px;
 }
 #logo {

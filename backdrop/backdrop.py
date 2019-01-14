@@ -13,33 +13,43 @@ if arg1 == 'set':
 	exit()
 	
 if arg1 == 'state':
-	onList = []
-	limitActiveList = []
+	upList = []
+	dnList = []
+	limitUpList = []
+	limitDnList = []
 	for i in range( 0, 7 ):
-		if GPIO.input( pinUPlist[ i ] ) == ON:
-			onList.append( 'up'+ str( i + 1 ) )
-		if GPIO.input( pinDNlist[ i ] ) == ON:
-			onList.append( 'dn'+ str( i + 1 ) )
-		if GPIO.input( pinLimitList[ i ] ) == ON:
-			limitActiveList.append( i + 1 )
+		pin = pinUpList[ i ]
+		if pin and GPIO.input( pin ) == ON:
+			upList.append( i + 1 )
+		pin = pinDnList[ i ]
+		if pin and GPIO.input( pin ) == ON:
+			dnList.append( i + 1 )
+		pin = pinUpLimitList[ i ]
+		if pin and GPIO.input( pin ) == ON:
+			limitUpList.append( i + 1 )
+		pin = pinDnLimitList[ i ]
+		if pin and GPIO.input( pin ) == ON:
+			limitDnList.append( i + 1 )
 
-	print( json.dumps( { 'on': onList, 'limitActive': limitActiveList } ) )
+	print( json.dumps( { 'up': upList, 'dn': dnList, 'limitUp': limitUpList, 'limitDn': limitDnList } ) )
 	exit()
 
 UpDn = arg1[ :2 ]
 i = int( arg1[ -1: ] ) - 1
 
 if UpDn == 'up':
-	pin = pinUPlist[ i ]
+	pin = pinUpList[ i ]
 else:
-	pin = pinDNlist[ i ]
+	pin = pinDnList[ i ]
 
 if len( sys.argv ) == 2:
 	GPIO.output( pin, OFF )
 	exit()
 	
 # prevent auto if limit already reach
-if UpDn == 'dn' and GPIO.input( pinLimitList[ i ] ) == ON and len( sys.argv ) == 3:
+if UpDn == 'up' and GPIO.input( pinUpLimitList[ i ] ) == ON and len( sys.argv ) == 3:
+	exit()
+if UpDn == 'dn' and GPIO.input( pinDnLimitList[ i ] ) == ON and len( sys.argv ) == 3:
 	exit()
 	
 second = float( sys.argv[ 2 ] )
@@ -48,7 +58,8 @@ GPIO.output( pin, ON )
 time.sleep( second )
 GPIO.output( pin, OFF )
 
-if UpDn == 'up':
-	data = { 'updn': 'up', 'num': i + 1 }
-	req = urllib2.Request( url, json.dumps( data ), headers = headerdata )
-	response = urllib2.urlopen( req )
+exit()
+# for testing
+data = { 'UpDn': UpDn, 'num': i + 1, 'active': 1 }
+req = urllib2.Request( url, json.dumps( data ), headers = headerdata )
+response = urllib2.urlopen( req )
