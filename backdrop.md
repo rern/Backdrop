@@ -13,8 +13,8 @@ EOF
 insertS 'location .pub'
 
 if ! grep -q 'aria' $file
-  commentS '^\s*rewrite'
-  string=$( cat <<'EOF'
+	commentS '^\s*rewrite'
+	string=$( cat <<'EOF'
             rewrite /css/(.*) /assets/css/$1 break;
             rewrite /fonts/(.*) /assets/fonts/$1 break;
             rewrite /img/(.*) /assets/img/$1 break;
@@ -22,5 +22,5 @@ if ! grep -q 'aria' $file
             rewrite /less/(.*) /assets/less/$1 break;
 EOF
 )
-  appendS -n +7 'listen 80 '
+	appendS -n +7 'listen 80 '
 fi
