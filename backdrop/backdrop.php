@@ -12,10 +12,10 @@ foreach ( range( 1, 7 ) as $i ) {
 	$name.= ','.( $_POST[ 'inputname'.$i ] ?: 0 );
 }
 $redis->hmSet(
-	'backdrops', array( 
+	'backdrop', array( 
 		  'up'        => ltrim( $up, ',' )
 		, 'dn'        => ltrim( $dn, ',' )
 		, 'name'      => ltrim( $name, ',' )
-		, 'increment' => $_POST[ 'increment' ]
+		, 'step' => $_POST[ 'step' ]
 	)
 );

@@ -15,7 +15,7 @@ import urllib2
 
 ON = 1
 OFF = 0
-increment = 0.05
+step = 0.05
 url = 'http://localhost/pub?id=backdrop'
 headerdata = { 'Content-type': 'application/json', 'Accept': 'application/json' }
 

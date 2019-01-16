@@ -15,18 +15,24 @@
 <body>
 <div class="container">
 <img id="logo" src="backdrop.png">
-<a id="head">ฉ า ก</a><br>
-<a id="title">ค ว บ คุ ม&emsp;<i class="fa fa-up-down wh"></i></a>
-<i id="setting" class="setting fa fa-gear"></i>
+<a id="head">ฉ า ก</a>
+<a id="title"><br>ค ว บ คุ ม&emsp;<i class="fa fa-up-down wh"></i></a>
+<i id="setting" class="setting fa fa-gear"></i><i id="manual" class="setting fa fa-manual"></i>
 <i id="close" class="setting fa fa-times hide"></i><i id="save" class="setting fa fa-save hide"></i>
 
 <?php
 $redis = new Redis();
 $redis->pconnect( '127.0.0.1' );
-$up = $redis->hGet( 'backdrops', 'up' );
-$dn = $redis->hGet( 'backdrops', 'dn' );
-$name = $redis->hGet( 'backdrops', 'name' );
-$increment = $redis->hGet( 'backdrops', 'increment' );
+if ( !$redis->exists( 'backdrop' ) ) {
+	$redis->hSet( 'backdrop', 'up', '3000,3000,3000,3000,3000,3000,3000' );
+	$redis->hSet( 'backdrop', 'dn', '3000,3000,3000,3000,3000,3000,3000' );
+	$redis->hSet( 'backdrop', 'name', '1,2,3,4,5,6,7' );
+	$redis->hSet( 'backdrop', 'step', '500' );
+}
+$up = $redis->hGet( 'backdrop', 'up' );
+$dn = $redis->hGet( 'backdrop', 'dn' );
+$name = $redis->hGet( 'backdrop', 'name' );
+$step = $redis->hGet( 'backdrop', 'step' );
 $up = explode( ',', $up );
 $dn = explode( ',', $dn );
 $name = explode( ',', $name );
@@ -37,7 +43,7 @@ foreach ( range( 7, 1 ) as $i ) {
 	$unused = $name[ $i - 1 ] ? '' : ' hide unused';
 	$html.='
 	<div class="boxed-group'.$unused.'">
-		<i id="manual-up'.$i.'" class="manual fa fa-arrow-up-circle"></i>
+		<i id="manual-up'.$i.'" class="manual fa fa-arrow-up-circle hide"></i>
 		<i id="up'.$i.'" class="updn up fa fa-arrow-up-circle disable"></i>
 		<i id="oup'.$i.'" class="oupdn oup fa fa-arrow-up-circle blink hide"></i>
 		<input id="ms-up'.$i.'" name="ms-up'.$i.'" type="text" class="ms msup hide" value="'.$up[ $i - 1 ].'">
@@ -49,13 +55,13 @@ foreach ( range( 7, 1 ) as $i ) {
 		<i id="dn'.$i.'" class="updn dn fa fa-arrow-down-circle"></i>
 		<i id="odn'.$i.'" class="oupdn odn fa fa-arrow-down-circle blink hide"></i>
 		<input id="ms-dn'.$i.'" name="ms-dn'.$i.'" type="text" class="ms msdn hide" value="'.$dn[ $i - 1 ].'">
-		<i id="manual-dn'.$i.'" class="manual fa fa-arrow-down-circle"></i>
+		<i id="manual-dn'.$i.'" class="manual fa fa-arrow-down-circle hide"></i>
 	</div>
 	';
 }
 echo $html.'
-	<span class="increment hide">กด-ปล่อย <input id="increment" name="increment" type="text" class="increment inputname hide" value="'.$increment.'"> /ครั้ง</span>
-	<span id="unit" class="increment hide">(หน่วย: 1/1000 วินาที)</span>
+	<span class="step hide">Manual step <input id="step" name="step" type="text" class="step inputname hide" value="'.$step.'"></span>
+	<span id="unit" class="step hide">(unit: 1/1000 second)</span>
 </form>
 ';
 ?>

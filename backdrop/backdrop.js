@@ -1,5 +1,4 @@
-var increment = '<?=$increment?>';
-var timeout;
+var step = '<?=$step?>';
 var tap = 0;
 var manual = 0;
 var backdroppy = '/srv/http/backdrop/backdrop.py ';
@@ -49,17 +48,14 @@ $( '.updn, .oupdn' ).click( function() {
 	var $UpDn = $( '#'+ UpDnid );
 	var $pair = $( '#'+ pairid );
 	var $oUpDn = $( '#o'+ UpDn + num );
-	var $manual = $( '#manual-up'+ num +', #manual-dn'+ num );
-	
-	clearTimeout( timeout );
-	$manual.removeClass( 'disable' );
+	$( '.manual' ).addClass( 'hide' );
 	
 	if ( $( this ).hasClass( 'updn' ) ) {
 		if ( $pair.hasClass( 'hide' ) ) {
 			setButtonOff( num );
 			var command = UpDnid;
 		} else {
-			setButtonOn( $UpDn, $oUpDn, $manual );
+			setButtonOn( $UpDn, $oUpDn );
 			var command = UpDnid +' '+ ( ms / 1000 ) +' &> /dev/null &';
 		}
 	} else {
@@ -78,7 +74,7 @@ $( '.manual' ).on( 'touchstart mousedown', function() {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
 	var UpDnid = this.id.replace( 'manual-', '' );
-	$.post( backdropphp, { bash: backdroppy + UpDnid +' '+ ( increment / 1000 ) +' manual &> /dev/null &' } );
+	$.post( backdropphp, { bash: backdroppy + UpDnid +' '+ ( step / 1000 ) +' manual &> /dev/null &' } );
 } ).taphold( function( e ) {
 	if ( $( this ).hasClass( 'disable' ) ) return
 	
@@ -96,6 +92,14 @@ $( '.manual' ).on( 'touchstart mousedown', function() {
 	
 	var UpDnid = this.id.replace( 'manual-', '' );
 	$.post( backdropphp, { bash: backdroppy + UpDnid } );
+} );
+$( '#manual' ).click( function() {
+	$( '.manual' ).toggleClass( 'hide' );
+	if ( window.innerWidth < 420 ) {
+		$( '.name' ).toggleClass( 'hide' );
+		$( '.number' ).toggleClass( 'valign15', ( $( '.name' ).hasClass( 'hide' ) ? '15px' : '' ) );
+	}
+	if ( window.innerWidth < 340 ) $( '.updn' ).toggleClass( 'hide' );
 } );
 $( '#setting' ).click( function() {
 	if ( !$( '.updn' ).hasClass( 'hide' ) ) set();
@@ -144,25 +148,25 @@ function setButton() {
 		} );
 	} );
 }
-function setButtonOn( $UpDn, $oUpDn, $manual ) {
+function setButtonOn( $UpDn, $oUpDn ) {
 	$UpDn.addClass( 'hide' );
 	$oUpDn.removeClass( 'hide' );
-	$manual.addClass( 'disable' );
 }
 function setButtonOff( num ) {
 	$( '#up'+ num +', #dn'+ num ).removeClass( 'hide' );
 	$( '#oup'+ num +', #odn'+ num ).addClass( 'hide' );
-	$( '#manual-up'+ num +', #manual-dn'+ num ).removeClass( 'disable' );
 }
 function set() {
-	$( '#title' ).html( 'ตั้ ง ค่ า&emsp;<i class="fa fa-sliders wh"></i>' );
-	$( '.ms, .setting, .inputname, .increment, .boxed-group.unused' ).removeClass( 'hide' );
-	$( '.manual, .updn, #setting, .name' ).addClass( 'hide' );
-	$( '.number' ).css( 'vertical-align', 0 );
+	$( '#title' ).html( '<br>ตั้ ง ค่ า&emsp;<i class="fa fa-sliders wh"></i>' );
+	$( '.ms, .setting, .inputname, .step, .boxed-group.unused' ).removeClass( 'hide' );
+	$( '.manual, .updn, #manual, #setting, .name' ).addClass( 'hide' );
+	$( '.boxed-group' ).css( 'padding', '5px 0' );
+	$( '.number' ).css( 'vertical-align', '-4px' );
 }
 function restore() {
-	$( '#title' ).html( 'ค ว บ คุ ม&emsp;<i class="fa fa-up-down wh"></i>' );
-	$( '.ms, .setting, .inputname, .increment, .boxed-group.unused' ).addClass( 'hide' );
-	$( '.manual, .updn, #setting, .name' ).removeClass( 'hide' );
+	$( '#title' ).html( '<br>ค ว บ คุ ม&emsp;<i class="fa fa-up-down wh"></i>' );
+	$( '.ms, .setting, .inputname, .step, .boxed-group.unused' ).addClass( 'hide' );
+	$( '.updn, #manual, #setting, .name' ).removeClass( 'hide' );
+	$( '.boxed-group' ).css( 'padding', '' );
 	$( '.number' ).css( 'vertical-align', '' );
 }

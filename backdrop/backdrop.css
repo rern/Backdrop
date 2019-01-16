@@ -1,6 +1,6 @@
 @font-face {
 	font-family: DSN_Kamon;
-	src: url( '/assets/fonts/DSN_Kamon.woff' ) format( 'woff' ), url( '/assets/fonts/DSN_Kamon.ttf' ) format( 'truetype' );
+	src: url( 'DSN_Kamon.woff' ) format( 'woff' ), url( 'DSN_Kamon.ttf' ) format( 'truetype' );
 	font-weight: normal;
 	font-style: normal;
 }
@@ -18,6 +18,7 @@
 .fa-arrow-down-circle:before { content: "\f56C" }
 .fa-plus-circle:before { content: "\f51D" }
 .fa-sliders:before { content: "\f50B" }
+.fa-manual:before { content: "\f56D" }
 .fa-gear:before { content: "\f509" }
 .fa-save:before { content: "\f542"}
 .fa-times:before { content: "\f51A" }
@@ -54,10 +55,9 @@ legend {
 }
 .boxed-group {
 	margin-bottom: 5px;
-	padding: 5px 10px 0 10px;
+	padding: 0 10px;
 	border-radius: 6px;
 	text-align: center;
-	line-height: 70px;
 	background: #19232d;
 }
 #close {
@@ -68,7 +68,6 @@ legend {
 	width: 70px;
 	height: 70px;
 	margin: 0 5px;
-	padding: 0;
 	border-radius: 50%;
 	border: none;
 	vertical-align: 0;
@@ -81,7 +80,8 @@ legend {
 	width: 70px;
 	margin: 0 5px;
 	vertical-align: -10px;
-	font-size: 64px;
+	font-size: 78px;
+	line-height: 80px;
 }
 .up {
 	color: #0e800e;
@@ -107,7 +107,7 @@ legend {
 .number,
 .setting {
 	display: inline-block;
-	width: 50px;
+	width: 55px;
 	font-size: 40px;
 	text-align: center;
 }
@@ -116,7 +116,8 @@ legend {
 	margin-top: -25px;
 }
 .manual {
-	vertical-align: -3px;
+	line-height: 80px;
+	font-size: 50px;
 	-webkit-touch-callout: none; /* iOS Safari */
 	-webkit-user-select: none;   /* Safari */
 	-moz-user-select: none;      /* Firefox */
@@ -125,8 +126,8 @@ legend {
 }
 .label {
 	display: inline-block;
-	vertical-align: -12px;
-	line-height: 20px;
+	vertical-align: -10px;
+	line-height: 22px;
 }
 .number {
 	width: 32px;
@@ -139,23 +140,25 @@ legend {
 }
 .name,
 .inputname {
+	min-width: 70px;
 	font-size: 16px;
 	text-align: center;
 }
 .inputname {
 	display: block;
 	height: 28px;
+	margin-top: 5px;
 	padding: 0 3px;
 	border-radius: 4px;
 	border: none;
 	color: #2b3c4e;
 	background: #e0e7ee;
 }
-.increment {
+.step {
 	display: inline-block;
 	font-size: 16px;
 }
-#increment {
+#step {
 	width: 70px;
 }
 #unit {
@@ -175,6 +178,9 @@ legend {
 .wh {
 	color: #e0e7ee;
 }
+.valign15 {
+	vertical-align: 15px;
+}
 @media(max-width: 375px) {
 	.name {
 		display: none;
@@ -183,9 +189,25 @@ legend {
 		vertical-align: -18px;
 	}
 	.number {
-		vertical-align: 20px;
+		vertical-align: 25px;
 	}
 }
+@media(max-width: 360px) {
+	#title i {
+		display: none;
+	}
+@media(max-width: 340px) {
+	#head {
+		display: inline-block;
+		margin-left: -10px;
+	}
+	#head,
+	.setting {
+		margin-top: 20px;
+	}
+	#title {
+		display: none;
+	}
 @media(min-height: 730px) {
 	.boxed-group {
 		margin-bottom: 10px;
