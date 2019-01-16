@@ -46,8 +46,8 @@ $( '.updn, .oupdn' ).click( function() {
 	var ms = $( '#ms-'+ UpDnid ).val();
 	
 	var $UpDn = $( '#'+ UpDnid );
-	var $pair = $( '#'+ pairid );
 	var $oUpDn = $( '#o'+ UpDn + num );
+	$pair = $( '#'+ pairid );
 	$( '.manual' ).addClass( 'hide' );
 	
 	if ( $( this ).hasClass( 'updn' ) ) {
@@ -104,7 +104,12 @@ $( '#manual' ).click( function() {
 $( '#setting' ).click( function() {
 	if ( !$( '.updn' ).hasClass( 'hide' ) ) set();
 } );
+$( 'input' ).click( function() {
+	$( '#save' ).removeClass( 'disable' );
+} );
 $( '#save' ).click( function() {
+	if ( $( '#save' ).hasClass( 'disable' ) ) return
+	
 	$.post( backdropphp, $( '#formms').serialize(), function() {
 		info( 'Settings saved.' );
 		$.each( $( '.inputname' ), function( i, el ) {
@@ -121,12 +126,10 @@ $( '#save' ).click( function() {
 $( '#close' ).click( restore );
 function setButton() {
 	$.post( backdropphp, { bash: backdroppy +'state' }, function( state ) {
-		var state = JSON.parse( state );
+		state = JSON.parse( state );
 		$( '.updn' ).removeClass( 'hide' );
 		$( '.oupdn' ).addClass( 'hide' );
-		$( '.manual, .dn' ).removeClass( 'disable' );
 		$( '.up' ).addClass( 'disable' );
-		if ( !state.up.length && !state.dn.length && !state.limitUp.length && !state.limitDn.length ) return
 		
 		$.each( state.limitUp, function( i, num ) {
 			$( '#up'+ num ).removeClass( 'disable' );

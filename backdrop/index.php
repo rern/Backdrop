@@ -18,7 +18,7 @@
 <a id="head">ฉ า ก</a>
 <a id="title"><br>ค ว บ คุ ม&emsp;<i class="fa fa-up-down wh"></i></a>
 <i id="setting" class="setting fa fa-gear"></i><i id="manual" class="setting fa fa-manual"></i>
-<i id="close" class="setting fa fa-times hide"></i><i id="save" class="setting fa fa-save hide"></i>
+<i id="close" class="setting fa fa-times hide"></i><i id="save" class="setting fa fa-save disable hide"></i>
 
 <?php
 $redis = new Redis();
@@ -61,7 +61,7 @@ foreach ( range( 7, 1 ) as $i ) {
 }
 echo $html.'
 	<span class="step hide">Manual step <input id="step" name="step" type="text" class="step inputname hide" value="'.$step.'"></span>
-	<span id="unit" class="step hide">(unit: 1/1000 second)</span>
+	<span id="unit" class="step hide">(unit: ms)</span>
 </form>
 ';
 ?>
