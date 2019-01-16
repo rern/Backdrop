@@ -170,6 +170,7 @@ function restore() {
 	$( '#title' ).html( '<br>ค ว บ คุ ม&emsp;<i class="fa fa-up-down wh"></i>' );
 	$( '.ms, .setting, .inputname, .step, .boxed-group.unused' ).addClass( 'hide' );
 	$( '.updn, #manual, #setting, .name' ).removeClass( 'hide' );
+	$( '#save' ).addClass( 'disable' );
 	$( '.boxed-group' ).css( 'padding', '' );
 	$( '.number' ).css( 'vertical-align', '' );
 }
