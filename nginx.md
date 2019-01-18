@@ -24,4 +24,6 @@ EOF
 )
     appendS -n +7 'listen 80 '
 fi
+
+systemctl restart nginx
 ```
