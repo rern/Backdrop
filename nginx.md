@@ -26,4 +26,11 @@ EOF
 fi
 
 systemctl restart nginx
+
+wgetnc https://github.com/rern/Backdrop/archive/master.zip
+mkdir -P /srv/http/backdrop
+bsdtar -xvf master.zip --strip 1 --exclude '.*' --exclude '*.md' -C /srv/http/backdrop
+rm master.zip
+chown -R http:http /srv/http/backdrop
+chmod -R 755 /srv/http/backdrop
 ```
