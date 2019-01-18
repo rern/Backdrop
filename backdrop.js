@@ -1,4 +1,3 @@
-var step = '<?=$step?>';
 var tap = 0;
 var manual = 0;
 var backdroppy = '/srv/http/backdrop/backdrop.py ';
@@ -20,17 +19,15 @@ var pushstream = new PushStream( {
 } );
 pushstream.addChannel( 'backdrop' );
 pushstream.onmessage = function( limit ) {
-	if ( manual === 1 || $( '#setting' ).hasClass( 'hide' ) ) return
-	
 	var limit = limit[ 0 ]; // limit is array
 	var UpDn = limit.UpDn;
 	var num = limit.num;
 	var active = limit.active;
-	var UpDnid = UpDn + num;
-	var pairid = ( UpDn === 'up' ? 'dn' : 'up' ) + num;
-	
-	$( '#'+ UpDnid ).toggleClass( 'disable', active === 1 );
-	$( '#'+ pairid ).toggleClass( 'disable', active === 0 );
+	if ( UpDn === 'up' ) {
+		$( '#up'+ num ).toggleClass( 'disable', active );
+	} else {
+		$( '#dn'+ num ).toggleClass( 'disable', active );
+	}
 	setButtonOff( num )
 }
 pushstream.connect();
@@ -66,25 +63,18 @@ $( '.updn, .oupdn' ).click( function() {
 } );
 $.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
 $( '.manual' ).on( 'touchstart mousedown', function() {
-	if ( $( this ).hasClass( 'disable' ) ) return
-	
 	tap = 1; // set to suppress touchend on tap
 	manual = 1;
 } ).on( 'tap', function() {
-	if ( $( this ).hasClass( 'disable' ) ) return
-	
+	var step = $( '#step' ).val();
 	var UpDnid = this.id.replace( 'manual-', '' );
 	$.post( backdropphp, { bash: backdroppy + UpDnid +' '+ ( step / 1000 ) +' manual &> /dev/null &' } );
 } ).taphold( function( e ) {
-	if ( $( this ).hasClass( 'disable' ) ) return
-	
 	tap = 0; // clear to allow touchend
 	var UpDnid = this.id.replace( 'manual-', '' );
 	var ms = $( '#ms-'+ UpDnid ).val();
 	$.post( backdropphp, { bash: backdroppy + UpDnid +' '+ ( ms / 1000 ) +' manual &> /dev/null &' } );
 } ).on( 'touchend mouseup', function() {
-	if ( $( this ).hasClass( 'disable' ) ) return
-	
 	if ( tap ) { // suppress and reset if tap
 		tap = 0;
 		return
@@ -129,15 +119,12 @@ function setButton() {
 		state = JSON.parse( state );
 		$( '.updn' ).removeClass( 'hide' );
 		$( '.oupdn' ).addClass( 'hide' );
-		$( '.up' ).addClass( 'disable' );
 		
 		$.each( state.limitUp, function( i, num ) {
-			$( '#up'+ num ).removeClass( 'disable' );
-			$( '#dn'+ num ).addClass( 'disable' );
+			$( '#up'+ num ).addClass( 'disable' );
 		} );
 		$.each( state.limitDn, function( i, num ) {
-			$( '#up'+ num ).addClass( 'disable' );
-			$( '#dn'+ num ).removeClass( 'disable' );
+			$( '#dn'+ num ).addClass( 'disable' );
 		} );
 		$.each( state.up, function( i, num ) {
 			$( '#up'+ num ).addClass( 'hide' );

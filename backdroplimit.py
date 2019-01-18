@@ -28,10 +28,10 @@ def limitActive( UpDn, i ):
 for i in range( 0, 7 ):
 	pin = pinUpLimitList[ i ]
 	if pin:
-		GPIO.add_event_detect( pin, GPIO.BOTH, callback = lambda channel: limitActive( 'up', i ), bouncetime = 1000 )
+		GPIO.add_event_detect( pin, GPIO.BOTH, callback = lambda channel: limitActive( 'up', i ), bouncetime = 500 )
 	pin = pinDnLimitList[ i ]
 	if pin:
-		GPIO.add_event_detect( pin, GPIO.BOTH, callback = lambda channel: limitActive( 'dn', i ), bouncetime = 1000 )
+		GPIO.add_event_detect( pin, GPIO.BOTH, callback = lambda channel: limitActive( 'dn', i ), bouncetime = 500 )
 
 while True:
 	time.sleep( 10 )
