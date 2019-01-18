@@ -29,8 +29,8 @@ pushstream.onmessage = function( limit ) {
 	var UpDnid = UpDn + num;
 	var pairid = ( UpDn === 'up' ? 'dn' : 'up' ) + num;
 	
-	$( '#'+ updnid ).toggleClass( 'disable', active );
-	$( '#'+ pairid ).removeClass( 'disable', !active );
+	$( '#'+ UpDnid ).toggleClass( 'disable', active === 1 );
+	$( '#'+ pairid ).toggleClass( 'disable', active === 0 );
 	setButtonOff( num )
 }
 pushstream.connect();
