@@ -3,6 +3,9 @@ var manual = 0;
 var backdroppy = '/srv/http/backdrop/backdrop.py ';
 var backdropphp = 'backdrop.php';
 
+// backdroplimit.py - start only if not running
+$.post( backdropphp, { bash: '! /usr/bin/pgrep backdroplimit &> /dev/null && /srv/http/backdrop/backdroplimit.py &' } );
+
 var nameW = Math.max.apply( Math, $( '.name' ).map( function() { return $( this ).width(); } ).get() );
 $( '.name, .inputname' ).css( 'width', nameW + 10 );
 
