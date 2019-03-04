@@ -14,9 +14,9 @@
 	font-family: enhance;
 	font-style: normal;
 }
-.fa-arrow-up-circle:before { content: "\f56B" }
-.fa-arrow-down-circle:before { content: "\f56C" }
-.fa-plus-circle:before { content: "\f51D" }
+.fa-arrow-up-circle:before { content: "\f571" }
+.fa-arrow-down-circle:before { content: "\f572" }
+.fa-plus-circle:before { content: "\f573" }
 .fa-sliders:before { content: "\f50B" }
 .fa-manual:before { content: "\f56D" }
 .fa-gear:before { content: "\f509" }
